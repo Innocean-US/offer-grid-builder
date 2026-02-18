@@ -1,1 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Offer Grid Builder (Phase 1)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+    .hint { color:#666; font-size:0.9rem; margin-bottom: 1rem; }
 
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: #fafafa;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: end;
+    }
+    .field {
+      display:flex;
+      flex-direction:column;
+      min-width: 220px;
+    }
+    label { font-weight: 650; margin-bottom: 0.25rem; }
+    select, input {
+      padding: 0.35rem 0.5rem;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      background: white;
+      border: 1px solid #ddd;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      vertical-align: top;
+    }
+    th {
+      background: #f2f2f2;
+      text-align: left;
+      font-weight: 700;
+    }
+    td.blue {
+      background: #d9f0f7;
+      font-weight: 650;
+    }
+    .btns { display:flex; gap: 0.5rem; margin-top: 0.75rem; }
+    button {
+      padding: 0.45rem 0.7rem;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      background: white;
+      cursor: pointer;
+      font-weight: 650;
+    }
+    button:hover { background:#f3f3f3; }
+    .small { font-size: 0.85rem; color:#666; margin-top:0.4rem; }
+  </style>
+</head>
+<body>
+  <h1>Offer Grid Builder (Phase 1)</h1>
+  <div class="hint">
+    Phase 1: Region + Offer Dates + row-entry grid with lookups (HDAA_Description / Model Year / Model Name / Trim) and auto-populated Model_ID.
+  </div>
+
+  <!-- TOP CONTROLS (equivalent to B2, Start/End Date) -->
+  <div class="card">
+    <div class="row">
+      <div class="field">
+        <label for="regionCode">Region (B2)</label>
+        <select id="regionCode">
+          <option value="">-- Select Region --</option>
+          <option value="ALR">ALR</option>
+          <option value="CEN">CEN</option>
+          <option value="EAS">EAS</option>
+          <option value="MAT">MAT</option>
+          <option value="MTN">MTN</option>
+          <option value="SCR">SCR</option>
+          <option value="SOU">SOU</option>
+          <option value="WES">WES</option>
+        </select>
+        <div class="small">Drives HDAA_Description dropdown values.</div>
+      </div>
+
+      <div class="field">
+        <label for="offerStart">Offer Start Date</label>
+        <input id="offerStart" type="date" />
+        <div class="small">Equivalent of Offer Start Date cell (A5/B5 area).</div>
+      </div>
+
+      <div class="field">
+        <label for="offerEnd">Offer End Date</label>
+        <input id="offerEnd" type="date" />
+        <div class="small">Equivalent of Offer End Date cell (A5/B5 area).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="card">
+    <div style="font-weight:800; margin-bottom: 0.5rem;">Offer Grid Rows</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 26%;">HDAA_Description (Col A)</th>
+          <th style="width: 12%;">Model_Year (Col B)</th>
+          <th style="width: 22%;">Model_Name (Col C)</th>
+          <th style="width: 22%;">Trim_name (Col D)</th>
+          <th style="width: 18%;">Model_ID (Col E, auto)</th>
+          <th style="width: 90px;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="gridBody"></tbody>
+    </table>
+
+    <div class="btns">
+      <button id="addRowBtn" type="button">Add Row</button>
+      <button id="clearRowsBtn" type="button">Clear Rows</button>
+    </div>
+
+    <div class="small">
+      Model_ID uses the same concept as your Excel formula:
+      XLOOKUP(Model_Name, LookupTables[Model_Name], LookupTables[Model_ID]).
+    </div>
+  </div>
+
+  <script>
+    /**
+     * IMPORTANT:
+     * These lists are pulled from your workbook’s Lookup Tables ranges:
+     * - Region markets: Lookup Tables!AS2:AZ... (region columns with alternating Name/Code values)
+     * - Models:         Lookup Tables!S4:U32 (Model_Name, Model_Code, Model_ID)
+     * - Trims:          Lookup Tables!AQ5:AQ... (Consolidated_Trims)
+     *
+     * If those change, update these constants (Phase 2 can automate loading).
+     */
+
+    // Region -> allowed HDAA_Description values (includes both full names and codes)
+    const MARKETS_BY_REGION = {
+      ALR: ["All Markets","ALR"],
+      CEN: ["All CEN","Chicago","CHI","Cincinnati","CIN","Cleveland","CLE","Columbus","COL","Detroit","DET","Indianapolis","IND","Milwaukee","MIL","St. Louis","STL"],
+      EAS: ["All EAS","Albany-Schenectady","ALB","Bangor","PTB","Boston","BOS","Buffalo","BUF","Hartford","HAR","New York","NYC","Philadelphia","PHI","Portland-Polano","PTA","Providence-New Bedford","PRV","Rochester","ROH","Springfield","SCH"],
+      MAT: ["All MAT","Baltimore","BAL","Charlotte","CHA","Greensboro","GHW","Norfolk/Portsmouth/Newport News","NOR","Raleigh-Durham","RAL","Richmond","RCH","Washington D.C.","WDC","Harrisburg-York","HRB","Pittsburgh","PIT","Wilkes Barre-Scranto","WIL"],
+      MTN: ["All MTN","Boise","BOI","Colorado Springs","CSP","Denver","DEN","El Paso/Indianapolis St.","ELP","Minneapolis","MIN","Portland","POR","Salt Lake City","SLC","Seattle","SEA"],
+      SCR: ["All SCR","Albuquerque","ABQ","Austin","AUS","Dallas","DAL","El Paso","ELP","Ft. Smith/Fayetteville/Springdale/Rogers","FSM","Houston","HOU","Kansas City","KAN","Little Rock","LRA","McAllen","MCA","Oklahoma City","OKC","San Antonio","SAN","Tulsa","TUL"],
+      SOU: ["All SOU","Atlanta","ATL","Birmingham","BIR","Boca","BOC","Ft. Myers/Naples","FTM","Greenville/Spartanburg/Asheville/Anderson","GNV","Jacksonville","JAC","Memphis","MEM","Miami","MIA","Mobile","MOB","Nashville","NAS","New Orleans","NOL","Orlando","ORL","Savannah","SAV","Tampa","TAM","West Palm Beach-Ft. Pierce","WPB"],
+      WES: ["All WES","Honolulu","HON","Las Vegas","LVG","Los Angeles","LOS","Phoenix","PHO","Sacramento","SAC","San Diego","SDO","Tucson","TUC","San Francisco","SFO"]
+    };
+
+    // Model_Name -> Model_ID (from Lookup Tables S:U)
+    const MODEL_ID_BY_NAME = {
+      "Alt Fuel": "",
+      "Accent": "1001",
+      "Elantra": "4001",
+      "Elantra GT": "D001",
+      "Elantra Hybrid": "4006",
+      "Elantra N": "4008",
+      "Ioniq 5": "5004",
+      "Ioniq 6": "A004",
+      "Ioniq 9": "7004",
+      "Ioniq Hybrid": "N006",
+      "Ioniq Plug-In Hybrid": "N005",
+      "Kona": "Q001",
+      "Kona Electric": "Q004",
+      "Kona N": "Q008",
+      "Nexo": "K007",
+      "Palisade": "J001",
+      "Palisade Hybrid": "J006",
+      "Santa Cruz": "9001",
+      "Santa Fe": "6001",
+      "Santa Fe Hybrid": "6006",
+      "Santa Fe Plug-In Hybrid": "6005",
+      "Sonata": "2001",
+      "Sonata Hybrid": "2006",
+      "Tucson": "8001",
+      "Tucson Hybrid": "8006",
+      "Tucson Plug-In Hybrid": "8005",
+      "Veloster": "F001",
+      "Veloster N": "F008",
+      "Venue": "3001"
+    };
+
+    // Trim list (Consolidated_Trims)
+    const TRIMS = [
+      "All","Blue","Blue Hybrid","Blue Hybrid AWD","Calligraphy","Calligraphy AWD","Electric Limited","Electric SE","Electric SEL","Hybrid Blue","Hybrid Limited","Hybrid SE","Hybrid SEL","Limited","Limited AWD","Limited Hybrid","Limited Hybrid AWD","Limited Plug-in Hybrid AWD",
+      "N DCT","N Line","N Line AWD","N Line DCT","N Line FWD","N Line M/T","N Line Night Edition","N M/T","Night","Plug-in Hybrid Limited","Plug-in Hybrid SE","Plug-in Hybrid SEL","SE","SE AWD","SE Standard Range","SEL","SEL AWD","SEL Convenience Hybrid AWD","SEL Plug-in Hybrid AWD","SEL Plus","SEL Premium","XRT","XRT AWD","XRT FWD"
+    ];
+
+    // Model years (you can extend this anytime)
+    const MODEL_YEARS = ["2025","2026","2027","2028","2029","2030"];
+
+    const els = {
+      regionCode: document.getElementById("regionCode"),
+      gridBody: document.getElementById("gridBody"),
+      addRowBtn: document.getElementById("addRowBtn"),
+      clearRowsBtn: document.getElementById("clearRowsBtn")
+    };
+
+    function makeOption(value) {
+      const opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent = value;
+      return opt;
+    }
+
+    function buildMarketSelect(region) {
+      const sel = document.createElement("select");
+      sel.className = "hd-market";
+      sel.appendChild(makeOption("")); // placeholder
+      sel.options[0].text = "-- Select --";
+
+      const list = region && MARKETS_BY_REGION[region] ? MARKETS_BY_REGION[region] : [];
+      list.forEach(v => sel.appendChild(makeOption(v)));
+      return sel;
+    }
+
+    function buildYearSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-year";
+      sel.appendChild(makeOption(""));
+      sel.options[0].text = "-- Select --";
+      MODEL_YEARS.forEach(y => sel.appendChild(makeOption(y)));
+      return sel;
+    }
+
+    function buildModelSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-model";
+      sel.appendChild(makeOption(""));
+      sel.options[0].text = "-- Select --";
+      Object.keys(MODEL_ID_BY_NAME).forEach(name => sel.appendChild(makeOption(name)));
+      return sel;
+    }
+
+    function buildTrimSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-trim";
+      sel.appendChild(makeOption(""));
+      sel.options[0].text = "-- Select --";
+      TRIMS.forEach(t => sel.appendChild(makeOption(t)));
+      return sel;
+    }
+
+    function computeModelId(modelName) {
+      if (!modelName) return "";
+      return MODEL_ID_BY_NAME[modelName] ?? "";
+    }
+
+    function addRow() {
+      const tr = document.createElement("tr");
+
+      // Col A: Market/Description
+      const tdA = document.createElement("td");
+      const marketSel = buildMarketSelect(els.regionCode.value);
+      tdA.appendChild(marketSel);
+
+      // Col B: Year
+      const tdB = document.createElement("td");
+      const yearSel = buildYearSelect();
+      tdB.appendChild(yearSel);
+
+      // Col C: Model name
+      const tdC = document.createElement("td");
+      const modelSel = buildModelSelect();
+      tdC.appendChild(modelSel);
+
+      // Col D: Trim
+      const tdD = document.createElement("td");
+      const trimSel = buildTrimSelect();
+      tdD.appendChild(trimSel);
+
+      // Col E: Model_ID auto
+      const tdE = document.createElement("td");
+      tdE.className = "blue";
+      tdE.textContent = "";
+
+      // Action
+      const tdX = document.createElement("td");
+      const rm = document.createElement("button");
+      rm.type = "button";
+      rm.textContent = "Remove";
+      rm.addEventListener("click", () => tr.remove());
+      tdX.appendChild(rm);
+
+      // Update Model_ID when Model_Name changes
+      modelSel.addEventListener("change", () => {
+        tdE.textContent = computeModelId(modelSel.value);
+      });
+
+      tr.appendChild(tdA);
+      tr.appendChild(tdB);
+      tr.appendChild(tdC);
+      tr.appendChild(tdD);
+      tr.appendChild(tdE);
+      tr.appendChild(tdX);
+
+      els.gridBody.appendChild(tr);
+    }
+
+    function refreshAllMarketDropdowns() {
+      const region = els.regionCode.value;
+      document.querySelectorAll("select.hd-market").forEach(sel => {
+        const current = sel.value;
+        sel.innerHTML = "";
+        sel.appendChild(makeOption(""));
+        sel.options[0].text = "-- Select --";
+        const list = region && MARKETS_BY_REGION[region] ? MARKETS_BY_REGION[region] : [];
+        list.forEach(v => sel.appendChild(makeOption(v)));
+
+        // keep selection if still valid
+        if (current && list.includes(current)) sel.value = current;
+        else sel.value = "";
+      });
+    }
+
+    // Events
+    els.regionCode.addEventListener("change", refreshAllMarketDropdowns);
+    els.addRowBtn.addEventListener("click", addRow);
+    els.clearRowsBtn.addEventListener("click", () => (els.gridBody.innerHTML = ""));
+
+    // Start with one row like Excel’s first data row
+    addRow();
+  </script>
+</body>
+</html>
