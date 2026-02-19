@@ -584,8 +584,8 @@
     els.clearRowsBtn.addEventListener("click", () => (els.gridBody.innerHTML = ""));
 
     // When Offer Start/End changes, refresh S/T auto-populated columns for all rows
-    document.getElementById("offerStart").addEventListener("change", refreshPhase2DatesForAllRows);
-    document.getElementById("offerEnd").addEventListener("change", refreshPhase2DatesForAllRows);
+    document.getElementById("offerStart").addEventListener("input", refreshPhase2DatesForAllRows);
+    document.getElementById("offerEnd").addEventListener("input", refreshPhase2DatesForAllRows);
 
     // Start with one row like Excel’s first data row
     addRow();
