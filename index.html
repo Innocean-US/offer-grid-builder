@@ -320,7 +320,7 @@
       tdT.textContent = hasWrapper ? formatDateShortMMDDYY(end) : "";
     }
 
-    function refreshPhase2DatesForAllRows() {
+    function refreshPhase2AutofieldsForAllRows() {
       document.querySelectorAll("tr[data-offer-row='1']").forEach(tr => {
         const wrapperSel = tr.querySelector("select.hd-cash-wrapper");
         const tdJ = tr.querySelector("td[data-col='J']");
