@@ -125,7 +125,31 @@
           <th style="width: 12%;">Model_Year</th>
           <th style="width: 22%;">Model_Name</th>
           <th style="width: 22%;">Trim_Name</th>
+
           <th style="width: 18%;">Model_ID</th>
+
+          <!-- Phase 2: Cash Total Savings Offer Section -->
+          <th>Creative_Name</th> <!-- F -->
+          <th>Cash_Wrapper_Creative</th> <!-- G -->
+          <th>Cash_Disclaimer_Type</th> <!-- H -->
+          <th>Cash_Incentive_Number</th> <!-- I -->
+
+          <th>Cash_Incentive_Type</th> <!-- J auto -->
+          <th>Cash_Offer_DisplayName</th> <!-- K auto -->
+          <th>Cash_Offer_Prefix</th> <!-- L auto -->
+
+          <th>Cash_Offer_Price</th> <!-- M -->
+          <th>Cash_Offer_Suffix</th> <!-- N -->
+
+          <th>Cash_Offer_ShortDescription</th> <!-- O auto -->
+
+          <th>Cash_RetailBonusCashOfferDetails</th> <!-- P -->
+          <th>Cash_HmfStandardAprOfferDetails</th> <!-- Q -->
+          <th>Cash_Disclaimer</th> <!-- R -->
+
+          <th>Cash_PurchaseStartDate</th> <!-- S auto -->
+          <th>Cash_PurchaseEndDate</th> <!-- T auto -->
+
           <th style="width: 90px;">Action</th>
         </tr>
       </thead>
@@ -208,6 +232,103 @@
     // Model years (you can extend this anytime)
     const MODEL_YEARS = ["2025","2026","2027","2028","2029","2030"];
 
+    // =========================
+    // PHASE 2 LOOKUPS + HELPERS (PASTE HERE)
+    // =========================
+    // Column F: store LABEL (full description) as the select value.
+    // Keep CODE available via option.dataset.code for later taxonomy building.
+    const CREATIVE_NAME_OPTIONS = [
+      { code: "",        label: "-- Select --" },
+      { code: "25PROMO", label: "2025 Promo Period Creative" },
+      { code: "SPGSE",   label: "Spring Getaway Sales Event" },
+      { code: "SGSE",    label: "Summer Getaway Sales Event" },
+      { code: "WGSE",    label: "Winter Getaway Sales Event" },
+      { code: "WIN",     label: "Wins Every Time VS Campaign" },
+      { code: "CUA",     label: "Customer Assurance" },
+      { code: "BRD",     label: "Brand" },
+      { code: "EVE",     label: "Evergreen" },
+      { code: "EVECON",  label: "Evergreen Conquest" },
+      { code: "EVERET",  label: "Evergreen Retention" }
+    ];
+
+    // Cash_Wrapper_Creative dropdown (Lookup Tables tab; Offer_Name table)
+    const CASH_WRAPPER_OPTIONS = [
+      { label: "-- Select --" },
+      { label: "Bonus Cash" },
+      { label: "Dealer Cash" },
+      { label: "Sales Event Cash" },
+      { label: "Total Savings" },
+      { label: "Total Savings + Charger + Installation" }
+    ];
+
+    function buildCreativeNameSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-creative-name";
+    
+      // value = label (full description), code stored in dataset for later taxonomy building
+      CREATIVE_NAME_OPTIONS.forEach(o => {
+        sel.appendChild(makeOptionWithCode(o.label, o.code));
+      });
+    
+      return sel;
+    }
+
+    function buildCashWrapperSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-cash-wrapper";
+    
+      // wrapper uses label directly as value (Excel formulas reference wrapper text)
+      CASH_WRAPPER_OPTIONS.forEach(o => sel.appendChild(makeOption(o.label)));
+    
+      return sel;
+    }
+
+    function buildTextInput(className = "") {
+      const input = document.createElement("input");
+      input.type = "text";
+      if (className) input.className = className;
+      return input;
+    }
+
+    function formatDateShortMMDDYY(dateStr) {
+      if (!dateStr) return "";
+      const d = new Date(dateStr + "T00:00:00");
+      if (isNaN(d.getTime())) return "";
+      const mm = String(d.getMonth() + 1);
+      const dd = String(d.getDate());
+      const yy = String(d.getFullYear()).slice(-2);
+      return `${mm}/${dd}/${yy}`;
+    }
+
+    function applyPhase2Autofields(wrapperValue, tdJ, tdK, tdL, tdO, tdS, tdT) {
+      const hasWrapper = !!(wrapperValue && wrapperValue.trim());
+
+      tdJ.textContent = hasWrapper ? wrapperValue : "";
+      tdK.textContent = hasWrapper ? wrapperValue : "";
+      tdL.textContent = hasWrapper ? "Up to" : "";
+      tdO.textContent = hasWrapper ? wrapperValue : "";
+
+      const start = document.getElementById("offerStart")?.value || "";
+      tdS.textContent = hasWrapper ? formatDateShortMMDDYY(start) : "";
+
+      const end = document.getElementById("offerEnd")?.value || "";
+      tdT.textContent = hasWrapper ? formatDateShortMMDDYY(end) : "";
+    }
+
+    function refreshPhase2DatesForAllRows() {
+      document.querySelectorAll("tr[data-offer-row='1']").forEach(tr => {
+        const wrapperSel = tr.querySelector("select.hd-cash-wrapper");
+        const tdJ = tr.querySelector("td[data-col='J']");
+        const tdK = tr.querySelector("td[data-col='K']");
+        const tdL = tr.querySelector("td[data-col='L']");
+        const tdO = tr.querySelector("td[data-col='O']");
+        const tdS = tr.querySelector("td[data-col='S']");
+        const tdT = tr.querySelector("td[data-col='T']");
+        if (!wrapperSel || !tdJ || !tdK || !tdL || !tdO || !tdS || !tdT) return;
+        applyPhase2Autofields(wrapperSel.value, tdJ, tdK, tdL, tdO, tdS, tdT);
+      });
+    }
+
     const els = {
       regionCode: document.getElementById("regionCode"),
       gridBody: document.getElementById("gridBody"),
@@ -219,6 +340,15 @@
       const opt = document.createElement("option");
       opt.value = value;
       opt.textContent = value;
+      return opt;
+    }
+
+    // NEW: option where value = label, but code stored for later taxonomy use
+    function makeOptionWithCode(label, code) {
+      const opt = document.createElement("option");
+      opt.value = label;          // what gets stored/shown in the grid cell
+      opt.textContent = label;    // what the user sees
+      opt.dataset.code = code || "";
       return opt;
     }
 
@@ -267,6 +397,9 @@
 
     function addRow() {
       const tr = document.createElement("tr");
+      tr.setAttribute("data-offer-row", "1");
+
+      // ----- Phase 1 -----
 
       // Col A: Market/Description
       const tdA = document.createElement("td");
@@ -293,7 +426,93 @@
       tdE.className = "blue";
       tdE.textContent = "";
 
-      // Action
+      // Update Model_ID when Model_Name changes
+      modelSel.addEventListener("change", () => {
+        tdE.textContent = computeModelId(modelSel.value);
+      });
+
+      // ----- Phase 2: Cash Total Savings Offer Section -----
+
+      // F Creative_Name dropdown
+      const tdF = document.createElement("td");
+      const creativeSel = buildCreativeNameSelect();
+      tdF.appendChild(creativeSel);
+
+      // Store selected creative code on the row for later taxonomy building
+      creativeSel.addEventListener("change", () => {
+        const code = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
+        tr.dataset.creativeCode = code;
+      });
+
+      // G Cash_Wrapper_Creative dropdown
+      const tdG = document.createElement("td");
+      const wrapperSel = buildCashWrapperSelect();
+      tdG.appendChild(wrapperSel);
+
+      // H user input
+      const tdH = document.createElement("td");
+      tdH.appendChild(buildTextInput("hd-cash-disclaimer-type"));
+
+      // I user input
+      const tdI = document.createElement("td");
+      tdI.appendChild(buildTextInput("hd-cash-incentive-number"));
+
+      // J auto (blue)
+      const tdJ = document.createElement("td");
+      tdJ.className = "blue";
+      tdJ.setAttribute("data-col", "J");
+
+      // K auto (blue)
+      const tdK = document.createElement("td");
+      tdK.className = "blue";
+      tdK.setAttribute("data-col", "K");
+
+      // L auto (blue)
+      const tdL = document.createElement("td");
+      tdL.className = "blue";
+      tdL.setAttribute("data-col", "L");
+
+      // M user input
+      const tdM = document.createElement("td");
+      tdM.appendChild(buildTextInput("hd-cash-offer-price"));
+
+      // N user input
+      const tdN = document.createElement("td");
+      tdN.appendChild(buildTextInput("hd-cash-offer-suffix"));
+
+      // O auto (blue)
+      const tdO = document.createElement("td");
+      tdO.className = "blue";
+      tdO.setAttribute("data-col", "O");
+
+      // P user input
+      const tdP = document.createElement("td");
+      tdP.appendChild(buildTextInput("hd-cash-retail-bc-details"));
+
+      // Q user input
+      const tdQ = document.createElement("td");
+      tdQ.appendChild(buildTextInput("hd-cash-hmf-apr-details"));
+
+      // R user input
+      const tdR = document.createElement("td");
+      tdR.appendChild(buildTextInput("hd-cash-disclaimer"));
+
+      // S auto (blue)
+      const tdS = document.createElement("td");
+      tdS.className = "blue";
+      tdS.setAttribute("data-col", "S");
+
+      // T auto (blue)
+      const tdT = document.createElement("td");
+      tdT.className = "blue";
+      tdT.setAttribute("data-col", "T");
+
+      // When wrapper changes, apply all Phase 2 formulas
+      wrapperSel.addEventListener("change", () => {
+        applyPhase2Autofields(wrapperSel.value, tdJ, tdK, tdL, tdO, tdS, tdT);
+      });
+
+      // ----- Action -----
       const tdX = document.createElement("td");
       const rm = document.createElement("button");
       rm.type = "button";
@@ -301,19 +520,40 @@
       rm.addEventListener("click", () => tr.remove());
       tdX.appendChild(rm);
 
-      // Update Model_ID when Model_Name changes
-      modelSel.addEventListener("change", () => {
-        tdE.textContent = computeModelId(modelSel.value);
-      });
-
+      // Append columns in order
       tr.appendChild(tdA);
       tr.appendChild(tdB);
       tr.appendChild(tdC);
       tr.appendChild(tdD);
       tr.appendChild(tdE);
+
+      tr.appendChild(tdF);
+      tr.appendChild(tdG);
+      tr.appendChild(tdH);
+      tr.appendChild(tdI);
+
+      tr.appendChild(tdJ);
+      tr.appendChild(tdK);
+      tr.appendChild(tdL);
+
+      tr.appendChild(tdM);
+      tr.appendChild(tdN);
+
+      tr.appendChild(tdO);
+
+      tr.appendChild(tdP);
+      tr.appendChild(tdQ);
+      tr.appendChild(tdR);
+
+      tr.appendChild(tdS);
+      tr.appendChild(tdT);
+
       tr.appendChild(tdX);
 
       els.gridBody.appendChild(tr);
+
+      // initialize Phase 2 auto-fields for blank wrapper
+      applyPhase2Autofields(wrapperSel.value, tdJ, tdK, tdL, tdO, tdS, tdT);
     }
 
     function refreshAllMarketDropdowns() {
@@ -336,6 +576,10 @@
     els.regionCode.addEventListener("change", refreshAllMarketDropdowns);
     els.addRowBtn.addEventListener("click", addRow);
     els.clearRowsBtn.addEventListener("click", () => (els.gridBody.innerHTML = ""));
+
+    // When Offer Start/End changes, refresh S/T auto-populated columns for all rows
+    document.getElementById("offerStart").addEventListener("change", refreshPhase2DatesForAllRows);
+    document.getElementById("offerEnd").addEventListener("change", refreshPhase2DatesForAllRows);
 
     // Start with one row like Excel’s first data row
     addRow();
