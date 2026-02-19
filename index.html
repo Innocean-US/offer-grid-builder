@@ -5,148 +5,141 @@
   <title>Offer Grid Builder</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
+    :root{
+      --border:#ddd;
+      --border2:#e9e9e9;
+      --bg:#fafafa;
+      --head:#f2f2f2;
+      --blue:#d9f0f7;
+      --text:#111;
+      --muted:#666;
+      --radius:10px;
+    }
+
+    body{
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 2rem auto;
       padding: 0 1rem;
+      color: var(--text);
     }
-    h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
-    .hint { color:#666; font-size:0.9rem; margin-bottom: 1rem; }
+    h1{ font-size: 1.6rem; margin:0 0 .25rem 0; }
+    .hint{ color:var(--muted); font-size:.9rem; margin:0 0 1rem 0; }
 
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 1rem;
-      margin: 1rem 0;
-      background: #fafafa;
+    .card{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:1rem;
+      margin:1rem 0;
+      background: var(--bg);
     }
 
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      align-items: end;
+    .row-controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      align-items:end;
     }
-    .field {
+    .field{
       display:flex;
       flex-direction:column;
-      min-width: 220px;
+      min-width: 240px;
     }
-    label { font-weight: 650; margin-bottom: 0.25rem; }
-    select, input {
-      padding: 0.4rem 0.55rem;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      background: white;
+    label{ font-weight:650; margin-bottom:.25rem; }
+    select,input{
+      padding:.45rem .55rem;
+      border:1px solid #bbb;
+      border-radius:8px;
+      background:#fff;
+      font: inherit;
+    }
+    .small{ font-size:.85rem; color:var(--muted); margin-top:.35rem; }
+
+    .section-title{
+      font-weight:800;
+      margin: .25rem 0 .5rem 0;
     }
 
-    /* Two phases on same line */
-    .phases-row {
-      display: flex;
-      gap: 1rem;
-      align-items: stretch;
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background:#fff;
     }
-    .phase-panel {
-      flex: 1 1 0;
-      min-width: 0; /* critical: allows inner scroll instead of page overflow */
-      border: 1px solid #ddd;
-      background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
+    table{
+      width:max-content; /* let it be as wide as needed */
+      min-width:100%;
+      border-collapse:collapse;
+      background:#fff;
     }
-    .phase-header {
-      padding: 0.75rem 0.9rem;
-      background: #f2f2f2;
-      border-bottom: 1px solid #e2e2e2;
-      font-weight: 800;
+    th, td{
+      border-bottom:1px solid var(--border2);
+      padding:.5rem;
+      vertical-align:top;
+      white-space:nowrap;
     }
-    .phase-body {
-      padding: 0.75rem 0.9rem;
-    }
-
-    /* Table styling */
-    .table-wrap {
-      overflow-x: auto;          /* horizontal scroll stays inside each phase */
-      -webkit-overflow-scrolling: touch;
-      border: 1px solid #eee;
-      border-radius: 10px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      min-width: 640px; /* Phase 1 baseline */
-    }
-    table.phase2 {
-      min-width: 1300px; /* Phase 2 needs more width; scroll inside panel */
-    }
-    th, td {
-      border-bottom: 1px solid #eee;
-      padding: 0.55rem 0.6rem;
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-    th {
-      background: #fafafa;
-      text-align: left;
-      font-weight: 700;
-      border-bottom: 1px solid #e6e6e6;
+    th{
+      position:sticky;
+      top:0;
+      background:var(--head);
+      text-align:left;
+      font-weight:750;
+      border-bottom:1px solid var(--border);
+      z-index:2;
     }
 
-    .cell-input, .cell-select {
-      width: 100%;
-      min-width: 140px;
-      box-sizing: border-box;
-    }
-    .cell-select { min-width: 160px; }
-
-    .readonly {
-      padding: 0.4rem 0.55rem;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      background: #fff;
-      min-width: 120px;
-      box-sizing: border-box;
-    }
-    .readonly.blue {
-      background: #d9f0f7;
-      font-weight: 650;
+    .blue{
+      background: var(--blue);
+      font-weight:650;
     }
 
-    .btns {
+    .btns{
       display:flex;
-      gap: 0.5rem;
-      margin-top: 0.9rem;
-      justify-content: flex-start;
+      gap:.5rem;
+      margin-top:.75rem;
+      align-items:center;
+      flex-wrap:wrap;
     }
-    button {
-      padding: 0.5rem 0.8rem;
-      border-radius: 10px;
-      border: 1px solid #bbb;
-      background: white;
-      cursor: pointer;
-      font-weight: 650;
+    button{
+      padding:.45rem .7rem;
+      border-radius:10px;
+      border:1px solid #bbb;
+      background:#fff;
+      cursor:pointer;
+      font-weight:650;
     }
-    button:hover { background:#f3f3f3; }
+    button:hover{ background:#f3f3f3; }
 
-    .small { font-size: 0.85rem; color:#666; margin-top:0.6rem; }
+    .rownum{
+      font-weight:700;
+      color:#333;
+      width:60px;
+    }
 
-    /* Responsive: stack phases on small screens */
-    @media (max-width: 1020px) {
-      .phases-row { flex-direction: column; }
+    /* make inputs fit cells nicely */
+    td select, td input{
+      width: 180px;
+      max-width: 100%;
+    }
+    td .tight{ width: 120px; }
+    td .wide{ width: 260px; }
+
+    /* readonly inputs look like cells */
+    input[readonly]{
+      cursor: default;
     }
   </style>
 </head>
 <body>
   <h1>Offer Grid Builder</h1>
   <div class="hint">
-    Excel-style horizontal rows. Phase 1 and Phase 2 sit side-by-side. “Add Row” adds a row to both phases.
+    Excel-style horizontal rows. Phase 1 table first, Phase 2 directly below, Phase 3 directly below.
+    Add/Remove rows stays aligned across all phases.
   </div>
 
   <!-- TOP CONTROLS -->
   <div class="card">
-    <div class="row">
+    <div class="row-controls">
       <div class="field">
         <label for="regionCode">Region</label>
         <select id="regionCode">
@@ -166,93 +159,107 @@
       <div class="field">
         <label for="offerStart">Offer Start Date</label>
         <input id="offerStart" type="date" />
+        <div class="small">Used by Phase 2 & Phase 3 PurchaseStartDate.</div>
       </div>
 
       <div class="field">
         <label for="offerEnd">Offer End Date</label>
         <input id="offerEnd" type="date" />
+        <div class="small">Used by Phase 2 & Phase 3 PurchaseEndDate.</div>
       </div>
     </div>
   </div>
 
-  <!-- PHASES SIDE BY SIDE -->
   <div class="card">
-    <div class="phases-row">
-      <!-- Phase 1 -->
-      <div class="phase-panel">
-        <div class="phase-header">Phase 1: Offer Grid Rows</div>
-        <div class="phase-body">
-          <div class="table-wrap">
-            <table id="phase1Table">
-              <thead>
-                <tr>
-                  <th style="width:70px;">Row</th>
-                  <th>HDAA_Description</th>
-                  <th>Model_Year</th>
-                  <th>Model_Name</th>
-                  <th>Trim_Name</th>
-                  <th>Model_ID</th>
-                  <th style="width:110px;">Action</th>
-                </tr>
-              </thead>
-              <tbody id="phase1Body"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <!-- Phase 1 -->
+    <div class="section-title">Phase 1: Offer Grid Rows</div>
+    <div class="table-wrap">
+      <table id="phase1Table">
+        <thead>
+          <tr>
+            <th class="rownum">Row</th>
+            <th>HDAA_Description</th>
+            <th>Model_Year</th>
+            <th>Model_Name</th>
+            <th>Trim_Name</th>
+            <th>Model_ID</th>
+            <th style="width:110px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="phase1Body"></tbody>
+      </table>
+    </div>
 
-      <!-- Phase 2 -->
-      <div class="phase-panel">
-        <div class="phase-header">Phase 2: Cash Total Savings Offer Section</div>
-        <div class="phase-body">
-          <div class="table-wrap">
-            <table class="phase2" id="phase2Table">
-              <thead>
-                <tr>
-                  <th style="width:70px;">Row</th>
-                  <th>Creative_Name</th>
-                  <th>Cash_Wrapper_Creative</th>
-                  <th>Cash_Disclaimer_Type</th>
-                  <th>Cash_Incentive_Number</th>
+    <!-- Phase 2 -->
+    <div class="section-title" style="margin-top:1rem;">Phase 2: Cash Total Savings Offer Section</div>
+    <div class="table-wrap">
+      <table id="phase2Table">
+        <thead>
+          <tr>
+            <th class="rownum">Row</th>
+            <th>Creative_Name</th>
+            <th>Cash_Wrapper_Creative</th>
+            <th>Cash_Disclaimer_Type</th>
+            <th>Cash_Incentive_Number</th>
+            <th>Cash_Incentive_Type</th>
+            <th>Cash_Offer_DisplayName</th>
+            <th>Cash_Offer_Prefix</th>
+            <th>Cash_Offer_Price</th>
+            <th>Cash_Offer_Suffix</th>
+            <th>Cash_Offer_ShortDescription</th>
+            <th>Cash_RetailBonusCashOfferDetails</th>
+            <th>Cash_HmfStandardAprOfferDetails</th>
+            <th>Cash_Disclaimer</th>
+            <th>Cash_PurchaseStartDate</th>
+            <th>Cash_PurchaseEndDate</th>
+          </tr>
+        </thead>
+        <tbody id="phase2Body"></tbody>
+      </table>
+    </div>
 
-                  <th>Cash_Incentive_Type</th>
-                  <th>Cash_Offer_DisplayName</th>
-                  <th>Cash_Offer_Prefix</th>
-
-                  <th>Cash_Offer_Price</th>
-                  <th>Cash_Offer_Suffix</th>
-
-                  <th>Cash_Offer_ShortDescription</th>
-
-                  <th>Cash_RetailBonusCashOfferDetails</th>
-                  <th>Cash_HmfStandardAprOfferDetails</th>
-                  <th>Cash_Disclaimer</th>
-
-                  <th>Cash_PurchaseStartDate</th>
-                  <th>Cash_PurchaseEndDate</th>
-                </tr>
-              </thead>
-              <tbody id="phase2Body"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <!-- Phase 3 -->
+    <div class="section-title" style="margin-top:1rem;">Phase 3: APR Offer Section</div>
+    <div class="table-wrap">
+      <table id="phase3Table">
+        <thead>
+          <tr>
+            <th class="rownum">Row</th>
+            <th>APR_Wrapper_Creative</th>          <!-- U -->
+            <th>APR_Incentive_Number</th>          <!-- V -->
+            <th>APR_Incentive_Type</th>            <!-- W auto -->
+            <th>APR_MSRP</th>                      <!-- X -->
+            <th>APR_Offer_DisplayName</th>          <!-- Y auto (your “Finance” formula) -->
+            <th>APR_Offer_Prefix</th>               <!-- Z -->
+            <th>APR_Offer_Value</th>                <!-- AA -->
+            <th>APR_Offer_Term</th>                 <!-- AB -->
+            <th>APR_Offer_Suffix</th>               <!-- AC auto -->
+            <th>APR_HMF_Bonus_Cash</th>             <!-- AD -->
+            <th>APR_OfferShortDescription</th>      <!-- AE auto -->
+            <th>APR_OfferDetails</th>               <!-- AF -->
+            <th>APR_HMF-Low-APR-OfferDetails</th>   <!-- AG -->
+            <th>APR_Disclaimer</th>                 <!-- AH -->
+            <th>APR_PurchaseStartDate</th>          <!-- AI auto -->
+            <th>APR_PurchaseEndDate</th>            <!-- AJ auto -->
+          </tr>
+        </thead>
+        <tbody id="phase3Body"></tbody>
+      </table>
     </div>
 
     <div class="btns">
       <button id="addRowBtn" type="button">Add Row</button>
       <button id="clearRowsBtn" type="button">Clear Rows</button>
-    </div>
-
-    <div class="small">
-      Model_ID is looked up by Model_Name. Phase 2 auto fields populate when Cash_Wrapper_Creative is selected, and dates come from Offer Start/End Date.
+      <div class="small" style="margin:0;">
+        Model_ID is lookup by Model_Name. Phase 2 & 3 auto fields populate when wrapper is selected.
+      </div>
     </div>
   </div>
 
   <script>
-    // -------------------------
-    // LOOKUPS
-    // -------------------------
+    /***********************
+     * LOOKUP TABLES
+     ***********************/
     const MARKETS_BY_REGION = {
       ALR: ["All Markets","ALR"],
       CEN: ["All CEN","Chicago","CHI","Cincinnati","CIN","Cleveland","CLE","Columbus","COL","Detroit","DET","Indianapolis","IND","Milwaukee","MIL","St. Louis","STL"],
@@ -297,15 +304,13 @@
     };
 
     const TRIMS = [
-      "All","Blue","Blue Hybrid","Blue Hybrid AWD","Calligraphy","Calligraphy AWD","Electric Limited","Electric SE","Electric SEL",
-      "Hybrid Blue","Hybrid Limited","Hybrid SE","Hybrid SEL","Limited","Limited AWD","Limited Hybrid","Limited Hybrid AWD",
-      "Limited Plug-in Hybrid AWD","N DCT","N Line","N Line AWD","N Line DCT","N Line FWD","N Line M/T","N Line Night Edition",
-      "N M/T","Night","Plug-in Hybrid Limited","Plug-in Hybrid SE","Plug-in Hybrid SEL","SE","SE AWD","SE Standard Range","SEL",
-      "SEL AWD","SEL Convenience Hybrid AWD","SEL Plug-in Hybrid AWD","SEL Plus","SEL Premium","XRT","XRT AWD","XRT FWD"
+      "All","Blue","Blue Hybrid","Blue Hybrid AWD","Calligraphy","Calligraphy AWD","Electric Limited","Electric SE","Electric SEL","Hybrid Blue","Hybrid Limited","Hybrid SE","Hybrid SEL","Limited","Limited AWD","Limited Hybrid","Limited Hybrid AWD","Limited Plug-in Hybrid AWD",
+      "N DCT","N Line","N Line AWD","N Line DCT","N Line FWD","N Line M/T","N Line Night Edition","N M/T","Night","Plug-in Hybrid Limited","Plug-in Hybrid SE","Plug-in Hybrid SEL","SE","SE AWD","SE Standard Range","SEL","SEL AWD","SEL Convenience Hybrid AWD","SEL Plug-in Hybrid AWD","SEL Plus","SEL Premium","XRT","XRT AWD","XRT FWD"
     ];
 
     const MODEL_YEARS = ["2025","2026","2027","2028","2029","2030"];
 
+    // Phase 2 - Creative Name (label stored; code available in dataset.code)
     const CREATIVE_NAME_OPTIONS = [
       { code: "",        label: "-- Select --" },
       { code: "25PROMO", label: "2025 Promo Period Creative" },
@@ -321,30 +326,44 @@
     ];
 
     const CASH_WRAPPER_OPTIONS = [
-      { label: "-- Select --" },
-      { label: "Bonus Cash" },
-      { label: "Dealer Cash" },
-      { label: "Sales Event Cash" },
-      { label: "Total Savings" },
-      { label: "Total Savings + Charger + Installation" }
+      "-- Select --",
+      "Bonus Cash",
+      "Dealer Cash",
+      "Sales Event Cash",
+      "Total Savings",
+      "Total Savings + Charger + Installation"
     ];
 
-    // -------------------------
-    // DOM
-    // -------------------------
+    // Phase 3 - APR Wrapper Creative (from your screenshot / Lookup Tables)
+    const APR_WRAPPER_OPTIONS = [
+      "-- Select --",
+      "APR",
+      "0-0",
+      "APR+NP",
+      "APR+BC",
+      "APR or BC",
+      "0-0+BC",
+      "0-0 plus up to BC",
+      "0-0 or up to BC",
+      "APR + Charger + Installation",
+      "APR + BC + Charger + Installation"
+    ];
+
+    /***********************
+     * HELPERS
+     ***********************/
     const els = {
       regionCode: document.getElementById("regionCode"),
       offerStart: document.getElementById("offerStart"),
       offerEnd: document.getElementById("offerEnd"),
-      phase1Body: document.getElementById("phase1Body"),
-      phase2Body: document.getElementById("phase2Body"),
       addRowBtn: document.getElementById("addRowBtn"),
-      clearRowsBtn: document.getElementById("clearRowsBtn")
+      clearRowsBtn: document.getElementById("clearRowsBtn"),
+
+      p1Body: document.getElementById("phase1Body"),
+      p2Body: document.getElementById("phase2Body"),
+      p3Body: document.getElementById("phase3Body")
     };
 
-    // -------------------------
-    // HELPERS
-    // -------------------------
     function makeOption(value, text = null) {
       const opt = document.createElement("option");
       opt.value = value;
@@ -360,36 +379,60 @@
       return opt;
     }
 
-    function buildSelect(className, placeholderText) {
+    function buildSelect(className, options, placeholderText="-- Select --") {
       const sel = document.createElement("select");
-      sel.className = className + " cell-select";
+      sel.className = className;
       sel.appendChild(makeOption("", placeholderText));
+      options.forEach(v => sel.appendChild(makeOption(v)));
       return sel;
     }
 
-    function buildTextInput(className) {
+    function buildMarketSelect(region) {
+      const sel = document.createElement("select");
+      sel.className = "hd-market";
+      sel.appendChild(makeOption("", "-- Select --"));
+      const list = region && MARKETS_BY_REGION[region] ? MARKETS_BY_REGION[region] : [];
+      list.forEach(v => sel.appendChild(makeOption(v)));
+      return sel;
+    }
+
+    function buildYearSelect() {
+      return buildSelect("hd-year", MODEL_YEARS);
+    }
+
+    function buildModelSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-model";
+      sel.appendChild(makeOption("", "-- Select --"));
+      Object.keys(MODEL_ID_BY_NAME).forEach(name => sel.appendChild(makeOption(name)));
+      return sel;
+    }
+
+    function buildTrimSelect() {
+      return buildSelect("hd-trim", TRIMS);
+    }
+
+    function buildTextInput(className="", widthClass="") {
       const input = document.createElement("input");
       input.type = "text";
-      input.className = (className || "") + " cell-input";
+      input.className = `${className} ${widthClass}`.trim();
       return input;
     }
 
-    function readonlyBlueBox(dataCol) {
-      const div = document.createElement("div");
-      div.className = "readonly blue";
-      div.textContent = "";
-      div.setAttribute("data-col", dataCol);
-      return div;
+    function buildReadonlyBlue(widthClass="") {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.readOnly = true;
+      input.className = `blue ${widthClass}`.trim();
+      return input;
     }
 
-    function readonlyBox(dataCol) {
-      const div = document.createElement("div");
-      div.className = "readonly";
-      div.textContent = "";
-      if (dataCol) div.setAttribute("data-col", dataCol);
-      return div;
+    function computeModelId(modelName) {
+      if (!modelName) return "";
+      return MODEL_ID_BY_NAME[modelName] ?? "";
     }
 
+    // Keep your earlier short date style (MM/DD/YY)
     function formatDateShortMMDDYY(dateStr) {
       if (!dateStr) return "";
       const d = new Date(dateStr + "T00:00:00");
@@ -400,250 +443,638 @@
       return `${mm}/${dd}/${yy}`;
     }
 
-    function computeModelId(modelName) {
-      if (!modelName) return "";
-      return MODEL_ID_BY_NAME[modelName] ?? "";
+    function money0(val) {
+      const n = Number(String(val).replace(/[^0-9.-]/g, ""));
+      if (!isFinite(n)) return "";
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(n);
     }
 
-    function applyPhase2Autofields(wrapperValue, boxJ, boxK, boxL, boxO, boxS, boxT) {
-      const hasWrapper = !!(wrapperValue && wrapperValue.trim());
+    /***********************
+     * STATE (rows aligned across all phases)
+     ***********************/
+    let rows = []; // each row object holds current values
+    function newRowState(id) {
+      return {
+        id,
+        // phase 1
+        market: "",
+        year: "",
+        model: "",
+        trim: "",
+        modelId: "",
 
-      boxJ.textContent = hasWrapper ? wrapperValue : "";
-      boxK.textContent = hasWrapper ? wrapperValue : "";
-      boxL.textContent = hasWrapper ? "Up to" : "";
-      boxO.textContent = hasWrapper ? wrapperValue : "";
+        // phase 2
+        creativeName: "",
+        creativeCode: "",
+        cashWrapper: "",
+        cashDisclaimerType: "",
+        cashIncentiveNumber: "",
+        cashOfferPrice: "",
+        cashOfferSuffix: "",
+        cashRetailBCDetails: "",
+        cashHmfAprDetails: "",
+        cashDisclaimer: "",
+        // phase 2 autos:
+        cashIncentiveType: "",
+        cashOfferDisplayName: "",
+        cashOfferPrefix: "",
+        cashOfferShortDescription: "",
+        cashPurchaseStartDate: "",
+        cashPurchaseEndDate: "",
 
-      const start = els.offerStart.value || "";
-      boxS.textContent = hasWrapper ? formatDateShortMMDDYY(start) : "";
-
-      const end = els.offerEnd.value || "";
-      boxT.textContent = hasWrapper ? formatDateShortMMDDYY(end) : "";
+        // phase 3
+        aprWrapper: "",
+        aprIncentiveNumber: "",
+        aprMsrp: "",
+        aprOfferPrefix: "",
+        aprOfferValue: "",
+        aprOfferTerm: "",
+        aprHmfBonusCash: "",
+        aprOfferDetails: "",
+        aprHmfLowAprOfferDetails: "",
+        aprDisclaimer: "",
+        // phase 3 autos:
+        aprIncentiveType: "",
+        aprOfferDisplayName: "",
+        aprOfferSuffix: "",
+        aprOfferShortDescription: "",
+        aprPurchaseStartDate: "",
+        aprPurchaseEndDate: ""
+      };
     }
 
-    // Update all Phase 2 date-driven boxes when Offer dates change
-    function refreshPhase2AutofieldsForAllRows() {
-      const rows = els.phase2Body.querySelectorAll("tr[data-row-id]");
-      rows.forEach(tr2 => {
-        const wrapperSel = tr2.querySelector("select.hd-cash-wrapper");
-        const boxJ = tr2.querySelector("[data-col='J']");
-        const boxK = tr2.querySelector("[data-col='K']");
-        const boxL = tr2.querySelector("[data-col='L']");
-        const boxO = tr2.querySelector("[data-col='O']");
-        const boxS = tr2.querySelector("[data-col='S']");
-        const boxT = tr2.querySelector("[data-col='T']");
-        if (!wrapperSel || !boxJ || !boxK || !boxL || !boxO || !boxS || !boxT) return;
-        applyPhase2Autofields(wrapperSel.value, boxJ, boxK, boxL, boxO, boxS, boxT);
+    /***********************
+     * PHASE 2 LOGIC
+     ***********************/
+    function computePhase2Autos(r) {
+      const hasWrapper = !!(r.cashWrapper && r.cashWrapper.trim());
+      r.cashIncentiveType = hasWrapper ? r.cashWrapper : "";
+      r.cashOfferDisplayName = hasWrapper ? r.cashWrapper : "";
+      r.cashOfferPrefix = hasWrapper ? "Up to" : "";
+      r.cashOfferShortDescription = hasWrapper ? r.cashWrapper : "";
+      r.cashPurchaseStartDate = hasWrapper ? formatDateShortMMDDYY(els.offerStart.value) : "";
+      r.cashPurchaseEndDate = hasWrapper ? formatDateShortMMDDYY(els.offerEnd.value) : "";
+    }
+
+    /***********************
+     * PHASE 3 LOGIC (matches your Excel formulas)
+     ***********************/
+    function computePhase3Autos(r) {
+      const hasWrapper = !!(r.aprWrapper && r.aprWrapper.trim());
+
+      // W
+      r.aprIncentiveType = hasWrapper ? "Low APR" : "";
+
+      // Y (your formula says "Finance" when wrapper selected)
+      r.aprOfferDisplayName = hasWrapper ? "Finance" : "";
+
+      // AC
+      r.aprOfferSuffix = hasWrapper ? "APR" : "";
+
+      // AI / AJ
+      r.aprPurchaseStartDate = hasWrapper ? formatDateShortMMDDYY(els.offerStart.value) : "";
+      r.aprPurchaseEndDate = hasWrapper ? formatDateShortMMDDYY(els.offerEnd.value) : "";
+
+      // AE (OfferShortDescription)
+      if (!hasWrapper) {
+        r.aprOfferShortDescription = "";
+        return;
+      }
+
+      const term = (r.aprOfferTerm || "").trim();
+      let desc = `Financing for up to ${term} months`;
+
+      const wrapper = r.aprWrapper || "";
+      const bonus = money0(r.aprHmfBonusCash);
+
+      // replicate Excel SEARCH logic (string contains)
+      if (wrapper.includes("0-0+BC")) {
+        if (bonus) desc += `, plus ${bonus} HMF Bonus Cash plus no payments for 90 days`;
+      }
+      if (wrapper.includes("APR+BC")) {
+        if (bonus) desc += `, plus ${bonus} HMF Bonus Cash`;
+      }
+      if (wrapper.includes("or up to BC")) {
+        if (bonus) desc += ` or up to ${bonus} HMF Bonus Cash`;
+      }
+      if (wrapper.includes("0-0")) {
+        desc += `, plus 0 payments for 90 days`;
+      }
+
+      r.aprOfferShortDescription = desc;
+    }
+
+    /***********************
+     * RENDERERS
+     ***********************/
+    function renderAll() {
+      els.p1Body.innerHTML = "";
+      els.p2Body.innerHTML = "";
+      els.p3Body.innerHTML = "";
+
+      rows.forEach((r, idx) => {
+        const rowNum = idx + 1;
+
+        els.p1Body.appendChild(renderPhase1Row(r, rowNum));
+        els.p2Body.appendChild(renderPhase2Row(r, rowNum));
+        els.p3Body.appendChild(renderPhase3Row(r, rowNum));
       });
     }
 
-    // Update all market dropdowns when region changes
+    function renderPhase1Row(r, rowNum) {
+      const tr = document.createElement("tr");
+      tr.dataset.rowId = r.id;
+
+      // Row #
+      const tdRow = document.createElement("td");
+      tdRow.className = "rownum";
+      tdRow.textContent = String(rowNum);
+      tr.appendChild(tdRow);
+
+      // HDAA_Description
+      const tdA = document.createElement("td");
+      const marketSel = buildMarketSelect(els.regionCode.value);
+      marketSel.value = r.market;
+      marketSel.addEventListener("change", () => {
+        r.market = marketSel.value;
+      });
+      tdA.appendChild(marketSel);
+      tr.appendChild(tdA);
+
+      // Model_Year
+      const tdB = document.createElement("td");
+      const yearSel = buildYearSelect();
+      yearSel.value = r.year;
+      yearSel.addEventListener("change", () => {
+        r.year = yearSel.value;
+      });
+      tdB.appendChild(yearSel);
+      tr.appendChild(tdB);
+
+      // Model_Name
+      const tdC = document.createElement("td");
+      const modelSel = buildModelSelect();
+      modelSel.value = r.model;
+      modelSel.addEventListener("change", () => {
+        r.model = modelSel.value;
+        r.modelId = computeModelId(r.model);
+        // update the visible Model_ID cell immediately:
+        modelIdBox.value = r.modelId;
+      });
+      tdC.appendChild(modelSel);
+      tr.appendChild(tdC);
+
+      // Trim_Name
+      const tdD = document.createElement("td");
+      const trimSel = buildTrimSelect();
+      trimSel.value = r.trim;
+      trimSel.addEventListener("change", () => {
+        r.trim = trimSel.value;
+      });
+      tdD.appendChild(trimSel);
+      tr.appendChild(tdD);
+
+      // Model_ID (auto)
+      const tdE = document.createElement("td");
+      const modelIdBox = buildReadonlyBlue("tight");
+      modelIdBox.value = r.modelId || "";
+      tdE.appendChild(modelIdBox);
+      tr.appendChild(tdE);
+
+      // Action (remove row everywhere)
+      const tdX = document.createElement("td");
+      const rm = document.createElement("button");
+      rm.type = "button";
+      rm.textContent = "Remove";
+      rm.addEventListener("click", () => removeRow(r.id));
+      tdX.appendChild(rm);
+      tr.appendChild(tdX);
+
+      return tr;
+    }
+
+    function renderPhase2Row(r, rowNum) {
+      const tr = document.createElement("tr");
+      tr.dataset.rowId = r.id;
+
+      const tdRow = document.createElement("td");
+      tdRow.className = "rownum";
+      tdRow.textContent = String(rowNum);
+      tr.appendChild(tdRow);
+
+      // Creative_Name
+      const tdF = document.createElement("td");
+      const creativeSel = document.createElement("select");
+      creativeSel.appendChild(makeOption("", "-- Select --"));
+      CREATIVE_NAME_OPTIONS.slice(1).forEach(o => {
+        creativeSel.appendChild(makeOptionWithCode(o.label, o.code, o.label));
+      });
+      creativeSel.value = r.creativeName || "";
+      creativeSel.addEventListener("change", () => {
+        r.creativeName = creativeSel.value;
+        r.creativeCode = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
+      });
+      tdF.appendChild(creativeSel);
+      tr.appendChild(tdF);
+
+      // Cash_Wrapper_Creative
+      const tdG = document.createElement("td");
+      const wrapperSel = document.createElement("select");
+      wrapperSel.appendChild(makeOption("", "-- Select --"));
+      CASH_WRAPPER_OPTIONS.slice(1).forEach(v => wrapperSel.appendChild(makeOption(v)));
+      wrapperSel.value = r.cashWrapper || "";
+      wrapperSel.addEventListener("change", () => {
+        r.cashWrapper = wrapperSel.value;
+        computePhase2Autos(r);
+        // refresh only this phase 2 row autos
+        tr.querySelector("[data-col='J']").value = r.cashIncentiveType;
+        tr.querySelector("[data-col='K']").value = r.cashOfferDisplayName;
+        tr.querySelector("[data-col='L']").value = r.cashOfferPrefix;
+        tr.querySelector("[data-col='O']").value = r.cashOfferShortDescription;
+        tr.querySelector("[data-col='S']").value = r.cashPurchaseStartDate;
+        tr.querySelector("[data-col='T']").value = r.cashPurchaseEndDate;
+      });
+      tdG.appendChild(wrapperSel);
+      tr.appendChild(tdG);
+
+      // H
+      const tdH = document.createElement("td");
+      const inH = buildTextInput("","wide");
+      inH.value = r.cashDisclaimerType || "";
+      inH.addEventListener("input", () => r.cashDisclaimerType = inH.value);
+      tdH.appendChild(inH);
+      tr.appendChild(tdH);
+
+      // I
+      const tdI = document.createElement("td");
+      const inI = buildTextInput("","tight");
+      inI.value = r.cashIncentiveNumber || "";
+      inI.addEventListener("input", () => r.cashIncentiveNumber = inI.value);
+      tdI.appendChild(inI);
+      tr.appendChild(tdI);
+
+      // J auto
+      const tdJ = document.createElement("td");
+      const boxJ = buildReadonlyBlue();
+      boxJ.dataset.col = "J";
+      boxJ.value = r.cashIncentiveType || "";
+      tdJ.appendChild(boxJ);
+      tr.appendChild(tdJ);
+
+      // K auto
+      const tdK = document.createElement("td");
+      const boxK = buildReadonlyBlue();
+      boxK.dataset.col = "K";
+      boxK.value = r.cashOfferDisplayName || "";
+      tdK.appendChild(boxK);
+      tr.appendChild(tdK);
+
+      // L auto
+      const tdL = document.createElement("td");
+      const boxL = buildReadonlyBlue();
+      boxL.dataset.col = "L";
+      boxL.value = r.cashOfferPrefix || "";
+      tdL.appendChild(boxL);
+      tr.appendChild(tdL);
+
+      // M
+      const tdM = document.createElement("td");
+      const inM = buildTextInput("","tight");
+      inM.value = r.cashOfferPrice || "";
+      inM.addEventListener("input", () => r.cashOfferPrice = inM.value);
+      tdM.appendChild(inM);
+      tr.appendChild(tdM);
+
+      // N
+      const tdN = document.createElement("td");
+      const inN = buildTextInput("","wide");
+      inN.value = r.cashOfferSuffix || "";
+      inN.addEventListener("input", () => r.cashOfferSuffix = inN.value);
+      tdN.appendChild(inN);
+      tr.appendChild(tdN);
+
+      // O auto
+      const tdO = document.createElement("td");
+      const boxO = buildReadonlyBlue("wide");
+      boxO.dataset.col = "O";
+      boxO.value = r.cashOfferShortDescription || "";
+      tdO.appendChild(boxO);
+      tr.appendChild(tdO);
+
+      // P
+      const tdP = document.createElement("td");
+      const inP = buildTextInput("","wide");
+      inP.value = r.cashRetailBCDetails || "";
+      inP.addEventListener("input", () => r.cashRetailBCDetails = inP.value);
+      tdP.appendChild(inP);
+      tr.appendChild(tdP);
+
+      // Q
+      const tdQ = document.createElement("td");
+      const inQ = buildTextInput("","wide");
+      inQ.value = r.cashHmfAprDetails || "";
+      inQ.addEventListener("input", () => r.cashHmfAprDetails = inQ.value);
+      tdQ.appendChild(inQ);
+      tr.appendChild(tdQ);
+
+      // R
+      const tdR = document.createElement("td");
+      const inR = buildTextInput("","wide");
+      inR.value = r.cashDisclaimer || "";
+      inR.addEventListener("input", () => r.cashDisclaimer = inR.value);
+      tdR.appendChild(inR);
+      tr.appendChild(tdR);
+
+      // S auto
+      const tdS = document.createElement("td");
+      const boxS = buildReadonlyBlue("tight");
+      boxS.dataset.col = "S";
+      boxS.value = r.cashPurchaseStartDate || "";
+      tdS.appendChild(boxS);
+      tr.appendChild(tdS);
+
+      // T auto
+      const tdT = document.createElement("td");
+      const boxT = buildReadonlyBlue("tight");
+      boxT.dataset.col = "T";
+      boxT.value = r.cashPurchaseEndDate || "";
+      tdT.appendChild(boxT);
+      tr.appendChild(tdT);
+
+      return tr;
+    }
+
+    function renderPhase3Row(r, rowNum) {
+      const tr = document.createElement("tr");
+      tr.dataset.rowId = r.id;
+
+      const tdRow = document.createElement("td");
+      tdRow.className = "rownum";
+      tdRow.textContent = String(rowNum);
+      tr.appendChild(tdRow);
+
+      // U APR_Wrapper_Creative
+      const tdU = document.createElement("td");
+      const aprWrapSel = document.createElement("select");
+      aprWrapSel.appendChild(makeOption("", "-- Select --"));
+      APR_WRAPPER_OPTIONS.slice(1).forEach(v => aprWrapSel.appendChild(makeOption(v)));
+      aprWrapSel.value = r.aprWrapper || "";
+      aprWrapSel.addEventListener("change", () => {
+        r.aprWrapper = aprWrapSel.value;
+        computePhase3Autos(r);
+        // refresh this row autos
+        tr.querySelector("[data-col='W']").value = r.aprIncentiveType;
+        tr.querySelector("[data-col='Y']").value = r.aprOfferDisplayName;
+        tr.querySelector("[data-col='AC']").value = r.aprOfferSuffix;
+        tr.querySelector("[data-col='AE']").value = r.aprOfferShortDescription;
+        tr.querySelector("[data-col='AI']").value = r.aprPurchaseStartDate;
+        tr.querySelector("[data-col='AJ']").value = r.aprPurchaseEndDate;
+      });
+      tdU.appendChild(aprWrapSel);
+      tr.appendChild(tdU);
+
+      // V APR_Incentive_Number (user)
+      const tdV = document.createElement("td");
+      const inV = buildTextInput("","tight");
+      inV.value = r.aprIncentiveNumber || "";
+      inV.addEventListener("input", () => r.aprIncentiveNumber = inV.value);
+      tdV.appendChild(inV);
+      tr.appendChild(tdV);
+
+      // W APR_Incentive_Type (auto "Low APR")
+      const tdW = document.createElement("td");
+      const boxW = buildReadonlyBlue();
+      boxW.dataset.col = "W";
+      boxW.value = r.aprIncentiveType || "";
+      tdW.appendChild(boxW);
+      tr.appendChild(tdW);
+
+      // X APR_MSRP (user)
+      const tdX = document.createElement("td");
+      const inX = buildTextInput("","tight");
+      inX.value = r.aprMsrp || "";
+      inX.addEventListener("input", () => r.aprMsrp = inX.value);
+      tdX.appendChild(inX);
+      tr.appendChild(tdX);
+
+      // Y APR_Offer_DisplayName (auto "Finance")
+      const tdY = document.createElement("td");
+      const boxY = buildReadonlyBlue();
+      boxY.dataset.col = "Y";
+      boxY.value = r.aprOfferDisplayName || "";
+      tdY.appendChild(boxY);
+      tr.appendChild(tdY);
+
+      // Z APR_Offer_Prefix (user)
+      const tdZ = document.createElement("td");
+      const inZ = buildTextInput("","wide");
+      inZ.value = r.aprOfferPrefix || "";
+      inZ.addEventListener("input", () => r.aprOfferPrefix = inZ.value);
+      tdZ.appendChild(inZ);
+      tr.appendChild(tdZ);
+
+      // AA APR_Offer_Value (user)
+      const tdAA = document.createElement("td");
+      const inAA = buildTextInput("","tight");
+      inAA.value = r.aprOfferValue || "";
+      inAA.addEventListener("input", () => r.aprOfferValue = inAA.value);
+      tdAA.appendChild(inAA);
+      tr.appendChild(tdAA);
+
+      // AB APR_Offer_Term (user)
+      const tdAB = document.createElement("td");
+      const inAB = buildTextInput("","tight");
+      inAB.value = r.aprOfferTerm || "";
+      inAB.addEventListener("input", () => {
+        r.aprOfferTerm = inAB.value;
+        computePhase3Autos(r);
+        tr.querySelector("[data-col='AE']").value = r.aprOfferShortDescription;
+      });
+      tdAB.appendChild(inAB);
+      tr.appendChild(tdAB);
+
+      // AC APR_Offer_Suffix (auto "APR")
+      const tdAC = document.createElement("td");
+      const boxAC = buildReadonlyBlue("tight");
+      boxAC.dataset.col = "AC";
+      boxAC.value = r.aprOfferSuffix || "";
+      tdAC.appendChild(boxAC);
+      tr.appendChild(tdAC);
+
+      // AD APR_HMF_Bonus_Cash (user)
+      const tdAD = document.createElement("td");
+      const inAD = buildTextInput("","tight");
+      inAD.value = r.aprHmfBonusCash || "";
+      inAD.addEventListener("input", () => {
+        r.aprHmfBonusCash = inAD.value;
+        computePhase3Autos(r);
+        tr.querySelector("[data-col='AE']").value = r.aprOfferShortDescription;
+      });
+      tdAD.appendChild(inAD);
+      tr.appendChild(tdAD);
+
+      // AE APR_OfferShortDescription (auto)
+      const tdAE = document.createElement("td");
+      const boxAE = buildReadonlyBlue("wide");
+      boxAE.dataset.col = "AE";
+      boxAE.value = r.aprOfferShortDescription || "";
+      tdAE.appendChild(boxAE);
+      tr.appendChild(tdAE);
+
+      // AF APR_OfferDetails (user)
+      const tdAF = document.createElement("td");
+      const inAF = buildTextInput("","wide");
+      inAF.value = r.aprOfferDetails || "";
+      inAF.addEventListener("input", () => r.aprOfferDetails = inAF.value);
+      tdAF.appendChild(inAF);
+      tr.appendChild(tdAF);
+
+      // AG APR_HMF-Low-APR-OfferDetails (user)
+      const tdAG = document.createElement("td");
+      const inAG = buildTextInput("","wide");
+      inAG.value = r.aprHmfLowAprOfferDetails || "";
+      inAG.addEventListener("input", () => r.aprHmfLowAprOfferDetails = inAG.value);
+      tdAG.appendChild(inAG);
+      tr.appendChild(tdAG);
+
+      // AH APR_Disclaimer (user)
+      const tdAH = document.createElement("td");
+      const inAH = buildTextInput("","wide");
+      inAH.value = r.aprDisclaimer || "";
+      inAH.addEventListener("input", () => r.aprDisclaimer = inAH.value);
+      tdAH.appendChild(inAH);
+      tr.appendChild(tdAH);
+
+      // AI APR_PurchaseStartDate (auto)
+      const tdAI = document.createElement("td");
+      const boxAI = buildReadonlyBlue("tight");
+      boxAI.dataset.col = "AI";
+      boxAI.value = r.aprPurchaseStartDate || "";
+      tdAI.appendChild(boxAI);
+      tr.appendChild(tdAI);
+
+      // AJ APR_PurchaseEndDate (auto)
+      const tdAJ = document.createElement("td");
+      const boxAJ = buildReadonlyBlue("tight");
+      boxAJ.dataset.col = "AJ";
+      boxAJ.value = r.aprPurchaseEndDate || "";
+      tdAJ.appendChild(boxAJ);
+      tr.appendChild(tdAJ);
+
+      return tr;
+    }
+
+    /***********************
+     * ROW OPERATIONS
+     ***********************/
+    let nextId = 1;
+
+    function addRow() {
+      const r = newRowState(String(nextId++));
+      // precompute autos so render has correct blanks
+      computePhase2Autos(r);
+      computePhase3Autos(r);
+      rows.push(r);
+      renderAll();
+      refreshAllMarketDropdowns(); // ensure new row market list matches region
+    }
+
+    function removeRow(id) {
+      rows = rows.filter(r => r.id !== id);
+      renderAll();
+      refreshAllMarketDropdowns();
+    }
+
+    function clearRows() {
+      rows = [];
+      renderAll();
+    }
+
+    /***********************
+     * GLOBAL EVENTS
+     ***********************/
     function refreshAllMarketDropdowns() {
       const region = els.regionCode.value;
       const list = region && MARKETS_BY_REGION[region] ? MARKETS_BY_REGION[region] : [];
 
-      els.phase1Body.querySelectorAll("select.hd-market").forEach(sel => {
+      // update each phase 1 market select, keep selection if valid
+      document.querySelectorAll("#phase1Body tr").forEach(tr => {
+        const id = tr.dataset.rowId;
+        const r = rows.find(x => x.id === id);
+        const sel = tr.querySelector("select.hd-market");
+        if (!sel || !r) return;
+
         const current = sel.value;
         sel.innerHTML = "";
         sel.appendChild(makeOption("", "-- Select --"));
         list.forEach(v => sel.appendChild(makeOption(v)));
 
-        // keep selection if still valid
         if (current && list.includes(current)) sel.value = current;
         else sel.value = "";
+
+        r.market = sel.value;
       });
     }
 
-    function removeRow(rowId) {
-      els.phase1Body.querySelector(`tr[data-row-id="${rowId}"]`)?.remove();
-      els.phase2Body.querySelector(`tr[data-row-id="${rowId}"]`)?.remove();
+    function refreshPhase2DatesForAllRows() {
+      rows.forEach(r => computePhase2Autos(r));
+      // update visible autos in phase 2 table only
+      document.querySelectorAll("#phase2Body tr").forEach(tr => {
+        const id = tr.dataset.rowId;
+        const r = rows.find(x => x.id === id);
+        if (!r) return;
+        const j = tr.querySelector("[data-col='J']");
+        const k = tr.querySelector("[data-col='K']");
+        const l = tr.querySelector("[data-col='L']");
+        const o = tr.querySelector("[data-col='O']");
+        const s = tr.querySelector("[data-col='S']");
+        const t = tr.querySelector("[data-col='T']");
+        if (j) j.value = r.cashIncentiveType;
+        if (k) k.value = r.cashOfferDisplayName;
+        if (l) l.value = r.cashOfferPrefix;
+        if (o) o.value = r.cashOfferShortDescription;
+        if (s) s.value = r.cashPurchaseStartDate;
+        if (t) t.value = r.cashPurchaseEndDate;
+      });
     }
 
-    // -------------------------
-    // ROW CREATION
-    // -------------------------
-    let rowCounter = 1;
-
-    function addRow() {
-      const rowId = String(rowCounter);   // prevents mysterious skips
-      rowCounter += 1;
-
-      // -------------------------
-      // PHASE 1 ROW
-      // -------------------------
-      const tr1 = document.createElement("tr");
-      tr1.setAttribute("data-row-id", rowId);
-
-      const tdRow1 = document.createElement("td");
-      tdRow1.textContent = rowId;
-
-      const tdMarket = document.createElement("td");
-      const marketSel = buildSelect("hd-market", "-- Select --");
-      const region = els.regionCode.value;
-      const list = region && MARKETS_BY_REGION[region] ? MARKETS_BY_REGION[region] : [];
-      list.forEach(v => marketSel.appendChild(makeOption(v)));
-      tdMarket.appendChild(marketSel);
-
-      const tdYear = document.createElement("td");
-      const yearSel = buildSelect("hd-year", "-- Select --");
-      MODEL_YEARS.forEach(y => yearSel.appendChild(makeOption(y)));
-      tdYear.appendChild(yearSel);
-
-      const tdModel = document.createElement("td");
-      const modelSel = buildSelect("hd-model", "-- Select --");
-      Object.keys(MODEL_ID_BY_NAME).forEach(name => modelSel.appendChild(makeOption(name)));
-      tdModel.appendChild(modelSel);
-
-      const tdTrim = document.createElement("td");
-      const trimSel = buildSelect("hd-trim", "-- Select --");
-      TRIMS.forEach(t => trimSel.appendChild(makeOption(t)));
-      tdTrim.appendChild(trimSel);
-
-      const tdModelId = document.createElement("td");
-      const modelIdBox = readonlyBlueBox("E");
-      tdModelId.appendChild(modelIdBox);
-
-      modelSel.addEventListener("change", () => {
-        modelIdBox.textContent = computeModelId(modelSel.value);
+    function refreshPhase3DatesForAllRows() {
+      rows.forEach(r => computePhase3Autos(r));
+      // update visible autos in phase 3 table only
+      document.querySelectorAll("#phase3Body tr").forEach(tr => {
+        const id = tr.dataset.rowId;
+        const r = rows.find(x => x.id === id);
+        if (!r) return;
+        const w = tr.querySelector("[data-col='W']");
+        const y = tr.querySelector("[data-col='Y']");
+        const ac = tr.querySelector("[data-col='AC']");
+        const ae = tr.querySelector("[data-col='AE']");
+        const ai = tr.querySelector("[data-col='AI']");
+        const aj = tr.querySelector("[data-col='AJ']");
+        if (w) w.value = r.aprIncentiveType;
+        if (y) y.value = r.aprOfferDisplayName;
+        if (ac) ac.value = r.aprOfferSuffix;
+        if (ae) ae.value = r.aprOfferShortDescription;
+        if (ai) ai.value = r.aprPurchaseStartDate;
+        if (aj) aj.value = r.aprPurchaseEndDate;
       });
-
-      const tdAction = document.createElement("td");
-      const rmBtn = document.createElement("button");
-      rmBtn.type = "button";
-      rmBtn.textContent = "Remove";
-      rmBtn.addEventListener("click", () => removeRow(rowId));
-      tdAction.appendChild(rmBtn);
-
-      tr1.appendChild(tdRow1);
-      tr1.appendChild(tdMarket);
-      tr1.appendChild(tdYear);
-      tr1.appendChild(tdModel);
-      tr1.appendChild(tdTrim);
-      tr1.appendChild(tdModelId);
-      tr1.appendChild(tdAction);
-
-      // -------------------------
-      // PHASE 2 ROW
-      // -------------------------
-      const tr2 = document.createElement("tr");
-      tr2.setAttribute("data-row-id", rowId);
-
-      const tdRow2 = document.createElement("td");
-      tdRow2.textContent = rowId;
-
-      // Creative_Name
-      const tdCreative = document.createElement("td");
-      const creativeSel = document.createElement("select");
-      creativeSel.className = "hd-creative-name cell-select";
-      CREATIVE_NAME_OPTIONS.forEach((o, idx) => {
-        const val = idx === 0 ? "" : o.label; // store label in value
-        creativeSel.appendChild(makeOptionWithCode(o.label, o.code, val));
-      });
-      tdCreative.appendChild(creativeSel);
-
-      creativeSel.addEventListener("change", () => {
-        const code = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
-        tr2.dataset.creativeCode = code; // handy for later taxonomy building
-      });
-      tr2.dataset.creativeCode = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
-
-      // Cash_Wrapper_Creative
-      const tdWrapper = document.createElement("td");
-      const wrapperSel = document.createElement("select");
-      wrapperSel.className = "hd-cash-wrapper cell-select";
-      CASH_WRAPPER_OPTIONS.forEach((o, idx) => {
-        const opt = document.createElement("option");
-        opt.value = idx === 0 ? "" : o.label;
-        opt.textContent = o.label;
-        wrapperSel.appendChild(opt);
-      });
-      tdWrapper.appendChild(wrapperSel);
-
-      // Inputs
-      const tdDisclaimerType = document.createElement("td");
-      tdDisclaimerType.appendChild(buildTextInput("hd-cash-disclaimer-type"));
-
-      const tdIncentiveNumber = document.createElement("td");
-      tdIncentiveNumber.appendChild(buildTextInput("hd-cash-incentive-number"));
-
-      // Autos (blue)
-      const tdJ = document.createElement("td"); const boxJ = readonlyBlueBox("J"); tdJ.appendChild(boxJ);
-      const tdK = document.createElement("td"); const boxK = readonlyBlueBox("K"); tdK.appendChild(boxK);
-      const tdL = document.createElement("td"); const boxL = readonlyBlueBox("L"); tdL.appendChild(boxL);
-
-      // Inputs
-      const tdOfferPrice = document.createElement("td");
-      tdOfferPrice.appendChild(buildTextInput("hd-cash-offer-price"));
-
-      const tdOfferSuffix = document.createElement("td");
-      tdOfferSuffix.appendChild(buildTextInput("hd-cash-offer-suffix"));
-
-      // Auto
-      const tdO = document.createElement("td"); const boxO = readonlyBlueBox("O"); tdO.appendChild(boxO);
-
-      // Inputs
-      const tdRetailBC = document.createElement("td");
-      tdRetailBC.appendChild(buildTextInput("hd-cash-retail-bc-details"));
-
-      const tdHmfApr = document.createElement("td");
-      tdHmfApr.appendChild(buildTextInput("hd-cash-hmf-apr-details"));
-
-      const tdDisclaimer = document.createElement("td");
-      tdDisclaimer.appendChild(buildTextInput("hd-cash-disclaimer"));
-
-      // Autos dates
-      const tdS = document.createElement("td"); const boxS = readonlyBlueBox("S"); tdS.appendChild(boxS);
-      const tdT = document.createElement("td"); const boxT = readonlyBlueBox("T"); tdT.appendChild(boxT);
-
-      wrapperSel.addEventListener("change", () => {
-        applyPhase2Autofields(wrapperSel.value, boxJ, boxK, boxL, boxO, boxS, boxT);
-      });
-
-      tr2.appendChild(tdRow2);
-      tr2.appendChild(tdCreative);
-      tr2.appendChild(tdWrapper);
-      tr2.appendChild(tdDisclaimerType);
-      tr2.appendChild(tdIncentiveNumber);
-
-      tr2.appendChild(tdJ);
-      tr2.appendChild(tdK);
-      tr2.appendChild(tdL);
-
-      tr2.appendChild(tdOfferPrice);
-      tr2.appendChild(tdOfferSuffix);
-
-      tr2.appendChild(tdO);
-
-      tr2.appendChild(tdRetailBC);
-      tr2.appendChild(tdHmfApr);
-      tr2.appendChild(tdDisclaimer);
-
-      tr2.appendChild(tdS);
-      tr2.appendChild(tdT);
-
-      // Add to DOM
-      els.phase1Body.appendChild(tr1);
-      els.phase2Body.appendChild(tr2);
-
-      // Initialize auto fields
-      applyPhase2Autofields(wrapperSel.value, boxJ, boxK, boxL, boxO, boxS, boxT);
     }
 
-    // -------------------------
-    // EVENTS
-    // -------------------------
+    /***********************
+     * WIRE UP
+     ***********************/
     els.regionCode.addEventListener("change", refreshAllMarketDropdowns);
+    els.offerStart.addEventListener("input", () => { refreshPhase2DatesForAllRows(); refreshPhase3DatesForAllRows(); });
+    els.offerEnd.addEventListener("input", () => { refreshPhase2DatesForAllRows(); refreshPhase3DatesForAllRows(); });
+
     els.addRowBtn.addEventListener("click", addRow);
+    els.clearRowsBtn.addEventListener("click", clearRows);
 
-    els.clearRowsBtn.addEventListener("click", () => {
-      els.phase1Body.innerHTML = "";
-      els.phase2Body.innerHTML = "";
-      rowCounter = 1; // reset to mimic Excel starting at row 1
-    });
-
-    els.offerStart.addEventListener("input", refreshPhase2AutofieldsForAllRows);
-    els.offerEnd.addEventListener("input", refreshPhase2AutofieldsForAllRows);
-
-    // Start with one row like Excel
+    // Start with 1 row (Row 1, not Row 2)
     addRow();
   </script>
 </body>
