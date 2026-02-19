@@ -441,7 +441,8 @@
       // F Creative_Name dropdown
       const tdF = document.createElement("td");
       const creativeSel = buildCreativeNameSelect();
-      tdF.appendChild(creativeSel);
+      tdF.appendChild(creativeSel)
+      tr.dataset.creativeCode = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
 
       // Store selected creative code on the row for later taxonomy building
       creativeSel.addEventListener("change", () => {
