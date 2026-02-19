@@ -265,9 +265,10 @@
       const sel = document.createElement("select");
       sel.className = "hd-creative-name";
     
-      // value = label (full description), code stored in dataset for later taxonomy building
-      CREATIVE_NAME_OPTIONS.forEach(o => {
-        sel.appendChild(makeOptionWithCode(o.label, o.code));
+      CREATIVE_NAME_OPTIONS.forEach((o, idx) => {
+        // first option is placeholder -> value should be ""
+        const val = idx === 0 ? "" : o.label;
+        sel.appendChild(makeOptionWithCode(o.label, o.code, val));
       });
     
       return sel;
@@ -277,8 +278,12 @@
       const sel = document.createElement("select");
       sel.className = "hd-cash-wrapper";
     
-      // wrapper uses label directly as value (Excel formulas reference wrapper text)
-      CASH_WRAPPER_OPTIONS.forEach(o => sel.appendChild(makeOption(o.label)));
+      CASH_WRAPPER_OPTIONS.forEach((o, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx === 0 ? "" : o.label;
+        opt.textContent = o.label;
+        sel.appendChild(opt);
+      });
     
       return sel;
     }
@@ -344,10 +349,10 @@
     }
 
     // NEW: option where value = label, but code stored for later taxonomy use
-    function makeOptionWithCode(label, code) {
+    function makeOptionWithCode(label, code, valueOverride = null) {
       const opt = document.createElement("option");
-      opt.value = label;          // what gets stored/shown in the grid cell
-      opt.textContent = label;    // what the user sees
+      opt.value = valueOverride !== null ? valueOverride : label;
+      opt.textContent = label;
       opt.dataset.code = code || "";
       return opt;
     }
