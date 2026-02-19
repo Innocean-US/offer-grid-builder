@@ -492,7 +492,8 @@
     }
 
     function addRow() {
-      const rowId = String(rowCounter++);
+      const rowId = String(rowCounter);
+      rowCounter += 1;
 
       // ---------
       // Phase 1 row
