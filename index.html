@@ -10,13 +10,15 @@
       max-width: 1100px;
       margin: 2rem auto;
       padding: 0 1rem;
+      color: #111;
     }
+
     h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
     .hint { color:#666; font-size:0.9rem; margin-bottom: 1rem; }
 
     .card {
       border: 1px solid #ddd;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 1rem;
       margin: 1rem 0;
       background: #fafafa;
@@ -28,60 +30,131 @@
       gap: 1rem;
       align-items: end;
     }
+
     .field {
       display:flex;
       flex-direction:column;
       min-width: 220px;
     }
+
     label { font-weight: 650; margin-bottom: 0.25rem; }
+
     select, input {
-      padding: 0.35rem 0.5rem;
+      padding: 0.45rem 0.55rem;
       border: 1px solid #bbb;
-      border-radius: 6px;
+      border-radius: 8px;
       background: white;
+      font: inherit;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.75rem;
-      background: white;
-      border: 1px solid #ddd;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 0.5rem;
-      vertical-align: top;
-    }
-    th {
-      background: #f2f2f2;
-      text-align: left;
-      font-weight: 700;
-    }
-    td.blue {
-      background: #d9f0f7;
-      font-weight: 650;
-    }
-    .btns { display:flex; gap: 0.5rem; margin-top: 0.75rem; }
     button {
-      padding: 0.45rem 0.7rem;
-      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
       border: 1px solid #bbb;
       background: white;
       cursor: pointer;
       font-weight: 650;
     }
+
     button:hover { background:#f3f3f3; }
+
+    .btns { display:flex; gap: 0.5rem; margin-top: 0.75rem; }
     .small { font-size: 0.85rem; color:#666; margin-top:0.4rem; }
+
+    /* ---- Layout: stacked row cards + stacked phases ---- */
+
+    #rowsContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .row-card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .row-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .row-title { font-weight: 800; }
+
+    .phase {
+      border-top: 1px solid #eee;
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .phase:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .phase-title {
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .phase-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      gap: 0.75rem 1rem;
+    }
+
+    @media (max-width: 1020px) {
+      .phase-grid { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .phase-grid { grid-template-columns: 1fr; }
+    }
+
+    .field-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .field-label {
+      font-weight: 650;
+      font-size: 0.9rem;
+      color: #111;
+    }
+
+    .readonly {
+      padding: 0.45rem 0.55rem;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      background: #fff;
+      min-height: 1.15rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .readonly.blue {
+      background: #d9f0f7;
+      font-weight: 650;
+    }
   </style>
 </head>
+
 <body>
   <h1>Offer Grid Builder</h1>
   <div class="hint">
     Phase 1: Region + Offer Dates + row-entry grid with lookups (HDAA_Description / Model Year / Model Name / Trim) and auto-populated Model_ID.
+    <br />
+    Phase 2 sits directly below Phase 1 inside each row card. Future phases can stack below.
   </div>
 
-  <!-- TOP CONTROLS (equivalent to B2, Start/End Date) -->
+  <!-- TOP CONTROLS -->
   <div class="card">
     <div class="row">
       <div class="field">
@@ -97,64 +170,28 @@
           <option value="SOU">SOU</option>
           <option value="WES">WES</option>
         </select>
-        <div class="small">Drives HDAA_Description dropdown values.</div>
+        <div class="small">Updates all HDAA_Description dropdowns in existing rows.</div>
       </div>
 
       <div class="field">
         <label for="offerStart">Offer Start Date</label>
         <input id="offerStart" type="date" />
-        <div class="small">Equivalent of Offer Start Date cell (A5/B5 area).</div>
+        <div class="small">Feeds Cash_PurchaseStartDate when wrapper is selected.</div>
       </div>
 
       <div class="field">
         <label for="offerEnd">Offer End Date</label>
         <input id="offerEnd" type="date" />
-        <div class="small">Equivalent of Offer End Date cell (A5/B5 area).</div>
+        <div class="small">Feeds Cash_PurchaseEndDate when wrapper is selected.</div>
       </div>
     </div>
   </div>
 
-  <!-- GRID -->
+  <!-- ROWS -->
   <div class="card">
     <div style="font-weight:800; margin-bottom: 0.5rem;">Offer Grid Rows</div>
 
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 26%;">HDAA_Description</th>
-          <th style="width: 12%;">Model_Year</th>
-          <th style="width: 22%;">Model_Name</th>
-          <th style="width: 22%;">Trim_Name</th>
-
-          <th style="width: 18%;">Model_ID</th>
-
-          <!-- Phase 2: Cash Total Savings Offer Section -->
-          <th>Creative_Name</th> <!-- F -->
-          <th>Cash_Wrapper_Creative</th> <!-- G -->
-          <th>Cash_Disclaimer_Type</th> <!-- H -->
-          <th>Cash_Incentive_Number</th> <!-- I -->
-
-          <th>Cash_Incentive_Type</th> <!-- J auto -->
-          <th>Cash_Offer_DisplayName</th> <!-- K auto -->
-          <th>Cash_Offer_Prefix</th> <!-- L auto -->
-
-          <th>Cash_Offer_Price</th> <!-- M -->
-          <th>Cash_Offer_Suffix</th> <!-- N -->
-
-          <th>Cash_Offer_ShortDescription</th> <!-- O auto -->
-
-          <th>Cash_RetailBonusCashOfferDetails</th> <!-- P -->
-          <th>Cash_HmfStandardAprOfferDetails</th> <!-- Q -->
-          <th>Cash_Disclaimer</th> <!-- R -->
-
-          <th>Cash_PurchaseStartDate</th> <!-- S auto -->
-          <th>Cash_PurchaseEndDate</th> <!-- T auto -->
-
-          <th style="width: 90px;">Action</th>
-        </tr>
-      </thead>
-      <tbody id="gridBody"></tbody>
-    </table>
+    <div id="rowsContainer"></div>
 
     <div class="btns">
       <button id="addRowBtn" type="button">Add Row</button>
@@ -168,17 +205,10 @@
   </div>
 
   <script>
-    /**
-     * IMPORTANT:
-     * These lists are pulled from your workbook’s Lookup Tables ranges:
-     * - Region markets: Lookup Tables!AS2:AZ... (region columns with alternating Name/Code values)
-     * - Models:         Lookup Tables!S4:U32 (Model_Name, Model_Code, Model_ID)
-     * - Trims:          Lookup Tables!AQ5:AQ... (Consolidated_Trims)
-     *
-     * If those change, update these constants (Phase 2 can automate loading).
-     */
+    // =========================
+    // LOOKUP DATA
+    // =========================
 
-    // Region -> allowed HDAA_Description values (includes both full names and codes)
     const MARKETS_BY_REGION = {
       ALR: ["All Markets","ALR"],
       CEN: ["All CEN","Chicago","CHI","Cincinnati","CIN","Cleveland","CLE","Columbus","COL","Detroit","DET","Indianapolis","IND","Milwaukee","MIL","St. Louis","STL"],
@@ -190,7 +220,6 @@
       WES: ["All WES","Honolulu","HON","Las Vegas","LVG","Los Angeles","LOS","Phoenix","PHO","Sacramento","SAC","San Diego","SDO","Tucson","TUC","San Francisco","SFO"]
     };
 
-    // Model_Name -> Model_ID (from Lookup Tables S:U)
     const MODEL_ID_BY_NAME = {
       "Alt Fuel": "",
       "Accent": "1001",
@@ -223,20 +252,13 @@
       "Venue": "3001"
     };
 
-    // Trim list (Consolidated_Trims)
     const TRIMS = [
       "All","Blue","Blue Hybrid","Blue Hybrid AWD","Calligraphy","Calligraphy AWD","Electric Limited","Electric SE","Electric SEL","Hybrid Blue","Hybrid Limited","Hybrid SE","Hybrid SEL","Limited","Limited AWD","Limited Hybrid","Limited Hybrid AWD","Limited Plug-in Hybrid AWD",
       "N DCT","N Line","N Line AWD","N Line DCT","N Line FWD","N Line M/T","N Line Night Edition","N M/T","Night","Plug-in Hybrid Limited","Plug-in Hybrid SE","Plug-in Hybrid SEL","SE","SE AWD","SE Standard Range","SEL","SEL AWD","SEL Convenience Hybrid AWD","SEL Plug-in Hybrid AWD","SEL Plus","SEL Premium","XRT","XRT AWD","XRT FWD"
     ];
 
-    // Model years (you can extend this anytime)
     const MODEL_YEARS = ["2025","2026","2027","2028","2029","2030"];
 
-    // =========================
-    // PHASE 2 LOOKUPS + HELPERS (PASTE HERE)
-    // =========================
-    // Column F: store LABEL (full description) as the select value.
-    // Keep CODE available via option.dataset.code for later taxonomy building.
     const CREATIVE_NAME_OPTIONS = [
       { code: "",        label: "-- Select --" },
       { code: "25PROMO", label: "2025 Promo Period Creative" },
@@ -251,7 +273,6 @@
       { code: "EVERET",  label: "Evergreen Retention" }
     ];
 
-    // Cash_Wrapper_Creative dropdown (Lookup Tables tab; Offer_Name table)
     const CASH_WRAPPER_OPTIONS = [
       { label: "-- Select --" },
       { label: "Bonus Cash" },
@@ -261,31 +282,57 @@
       { label: "Total Savings + Charger + Installation" }
     ];
 
-    function buildCreativeNameSelect() {
-      const sel = document.createElement("select");
-      sel.className = "hd-creative-name";
-    
-      CREATIVE_NAME_OPTIONS.forEach((o, idx) => {
-        // first option is placeholder -> value should be ""
-        const val = idx === 0 ? "" : o.label;
-        sel.appendChild(makeOptionWithCode(o.label, o.code, val));
-      });
-    
-      return sel;
+    // =========================
+    // DOM REFS
+    // =========================
+
+    const els = {
+      regionCode: document.getElementById("regionCode"),
+      offerStart: document.getElementById("offerStart"),
+      offerEnd: document.getElementById("offerEnd"),
+      rowsContainer: document.getElementById("rowsContainer"),
+      addRowBtn: document.getElementById("addRowBtn"),
+      clearRowsBtn: document.getElementById("clearRowsBtn")
+    };
+
+    // =========================
+    // HELPERS
+    // =========================
+
+    function makeOption(value, textOverride = null) {
+      const opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent = textOverride !== null ? textOverride : value;
+      return opt;
     }
 
-    function buildCashWrapperSelect() {
-      const sel = document.createElement("select");
-      sel.className = "hd-cash-wrapper";
-    
-      CASH_WRAPPER_OPTIONS.forEach((o, idx) => {
-        const opt = document.createElement("option");
-        opt.value = idx === 0 ? "" : o.label;
-        opt.textContent = o.label;
-        sel.appendChild(opt);
-      });
-    
-      return sel;
+    function makeOptionWithCode(label, code, valueOverride = null) {
+      const opt = document.createElement("option");
+      opt.value = valueOverride !== null ? valueOverride : label;
+      opt.textContent = label;
+      opt.dataset.code = code || "";
+      return opt;
+    }
+
+    function fieldWrap(labelText, controlEl) {
+      const wrap = document.createElement("div");
+      wrap.className = "field-wrap";
+
+      const lab = document.createElement("div");
+      lab.className = "field-label";
+      lab.textContent = labelText;
+
+      wrap.appendChild(lab);
+      wrap.appendChild(controlEl);
+      return wrap;
+    }
+
+    function readonlyBlue(initialText = "", dataCol = "") {
+      const box = document.createElement("div");
+      box.className = "readonly blue";
+      box.textContent = initialText;
+      if (dataCol) box.setAttribute("data-col", dataCol);
+      return box;
     }
 
     function buildTextInput(className = "") {
@@ -293,6 +340,71 @@
       input.type = "text";
       if (className) input.className = className;
       return input;
+    }
+
+    function buildMarketSelect(region) {
+      const sel = document.createElement("select");
+      sel.className = "hd-market";
+
+      sel.appendChild(makeOption("", "-- Select --"));
+      const list = region && MARKETS_BY_REGION[region] ? MARKETS_BY_REGION[region] : [];
+      list.forEach(v => sel.appendChild(makeOption(v)));
+      return sel;
+    }
+
+    function buildYearSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-year";
+      sel.appendChild(makeOption("", "-- Select --"));
+      MODEL_YEARS.forEach(y => sel.appendChild(makeOption(y)));
+      return sel;
+    }
+
+    function buildModelSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-model";
+      sel.appendChild(makeOption("", "-- Select --"));
+      Object.keys(MODEL_ID_BY_NAME).forEach(name => sel.appendChild(makeOption(name)));
+      return sel;
+    }
+
+    function buildTrimSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-trim";
+      sel.appendChild(makeOption("", "-- Select --"));
+      TRIMS.forEach(t => sel.appendChild(makeOption(t)));
+      return sel;
+    }
+
+    function buildCreativeNameSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-creative-name";
+
+      CREATIVE_NAME_OPTIONS.forEach((o, idx) => {
+        const val = idx === 0 ? "" : o.label;
+        sel.appendChild(makeOptionWithCode(o.label, o.code, val));
+      });
+
+      return sel;
+    }
+
+    function buildCashWrapperSelect() {
+      const sel = document.createElement("select");
+      sel.className = "hd-cash-wrapper";
+
+      CASH_WRAPPER_OPTIONS.forEach((o, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx === 0 ? "" : o.label;
+        opt.textContent = o.label;
+        sel.appendChild(opt);
+      });
+
+      return sel;
+    }
+
+    function computeModelId(modelName) {
+      if (!modelName) return "";
+      return MODEL_ID_BY_NAME[modelName] ?? "";
     }
 
     function formatDateShortMMDDYY(dateStr) {
@@ -305,289 +417,205 @@
       return `${mm}/${dd}/${yy}`;
     }
 
-    function applyPhase2Autofields(wrapperValue, tdJ, tdK, tdL, tdO, tdS, tdT) {
+    function applyPhase2Autofields(wrapperValue, boxJ, boxK, boxL, boxO, boxS, boxT) {
       const hasWrapper = !!(wrapperValue && wrapperValue.trim());
 
-      tdJ.textContent = hasWrapper ? wrapperValue : "";
-      tdK.textContent = hasWrapper ? wrapperValue : "";
-      tdL.textContent = hasWrapper ? "Up to" : "";
-      tdO.textContent = hasWrapper ? wrapperValue : "";
+      boxJ.textContent = hasWrapper ? wrapperValue : "";
+      boxK.textContent = hasWrapper ? wrapperValue : "";
+      boxL.textContent = hasWrapper ? "Up to" : "";
+      boxO.textContent = hasWrapper ? wrapperValue : "";
 
-      const start = document.getElementById("offerStart")?.value || "";
-      tdS.textContent = hasWrapper ? formatDateShortMMDDYY(start) : "";
+      const start = els.offerStart.value || "";
+      boxS.textContent = hasWrapper ? formatDateShortMMDDYY(start) : "";
 
-      const end = document.getElementById("offerEnd")?.value || "";
-      tdT.textContent = hasWrapper ? formatDateShortMMDDYY(end) : "";
+      const end = els.offerEnd.value || "";
+      boxT.textContent = hasWrapper ? formatDateShortMMDDYY(end) : "";
     }
 
     function refreshPhase2AutofieldsForAllRows() {
-      document.querySelectorAll("tr[data-offer-row='1']").forEach(tr => {
-        const wrapperSel = tr.querySelector("select.hd-cash-wrapper");
-        const tdJ = tr.querySelector("td[data-col='J']");
-        const tdK = tr.querySelector("td[data-col='K']");
-        const tdL = tr.querySelector("td[data-col='L']");
-        const tdO = tr.querySelector("td[data-col='O']");
-        const tdS = tr.querySelector("td[data-col='S']");
-        const tdT = tr.querySelector("td[data-col='T']");
-        if (!wrapperSel || !tdJ || !tdK || !tdL || !tdO || !tdS || !tdT) return;
-        applyPhase2Autofields(wrapperSel.value, tdJ, tdK, tdL, tdO, tdS, tdT);
+      document.querySelectorAll("div.row-card[data-offer-row='1']").forEach(card => {
+        const wrapperSel = card.querySelector("select.hd-cash-wrapper");
+        const boxJ = card.querySelector("[data-col='J']");
+        const boxK = card.querySelector("[data-col='K']");
+        const boxL = card.querySelector("[data-col='L']");
+        const boxO = card.querySelector("[data-col='O']");
+        const boxS = card.querySelector("[data-col='S']");
+        const boxT = card.querySelector("[data-col='T']");
+        if (!wrapperSel || !boxJ || !boxK || !boxL || !boxO || !boxS || !boxT) return;
+
+        applyPhase2Autofields(wrapperSel.value, boxJ, boxK, boxL, boxO, boxS, boxT);
       });
-    }
-
-    const els = {
-      regionCode: document.getElementById("regionCode"),
-      gridBody: document.getElementById("gridBody"),
-      addRowBtn: document.getElementById("addRowBtn"),
-      clearRowsBtn: document.getElementById("clearRowsBtn")
-    };
-
-    function makeOption(value) {
-      const opt = document.createElement("option");
-      opt.value = value;
-      opt.textContent = value;
-      return opt;
-    }
-
-    // NEW: option where value = label, but code stored for later taxonomy use
-    function makeOptionWithCode(label, code, valueOverride = null) {
-      const opt = document.createElement("option");
-      opt.value = valueOverride !== null ? valueOverride : label;
-      opt.textContent = label;
-      opt.dataset.code = code || "";
-      return opt;
-    }
-
-    function buildMarketSelect(region) {
-      const sel = document.createElement("select");
-      sel.className = "hd-market";
-      sel.appendChild(makeOption("")); // placeholder
-      sel.options[0].text = "-- Select --";
-
-      const list = region && MARKETS_BY_REGION[region] ? MARKETS_BY_REGION[region] : [];
-      list.forEach(v => sel.appendChild(makeOption(v)));
-      return sel;
-    }
-
-    function buildYearSelect() {
-      const sel = document.createElement("select");
-      sel.className = "hd-year";
-      sel.appendChild(makeOption(""));
-      sel.options[0].text = "-- Select --";
-      MODEL_YEARS.forEach(y => sel.appendChild(makeOption(y)));
-      return sel;
-    }
-
-    function buildModelSelect() {
-      const sel = document.createElement("select");
-      sel.className = "hd-model";
-      sel.appendChild(makeOption(""));
-      sel.options[0].text = "-- Select --";
-      Object.keys(MODEL_ID_BY_NAME).forEach(name => sel.appendChild(makeOption(name)));
-      return sel;
-    }
-
-    function buildTrimSelect() {
-      const sel = document.createElement("select");
-      sel.className = "hd-trim";
-      sel.appendChild(makeOption(""));
-      sel.options[0].text = "-- Select --";
-      TRIMS.forEach(t => sel.appendChild(makeOption(t)));
-      return sel;
-    }
-
-    function computeModelId(modelName) {
-      if (!modelName) return "";
-      return MODEL_ID_BY_NAME[modelName] ?? "";
-    }
-
-    function addRow() {
-      const tr = document.createElement("tr");
-      tr.setAttribute("data-offer-row", "1");
-
-      // ----- Phase 1 -----
-
-      // Col A: Market/Description
-      const tdA = document.createElement("td");
-      const marketSel = buildMarketSelect(els.regionCode.value);
-      tdA.appendChild(marketSel);
-
-      // Col B: Year
-      const tdB = document.createElement("td");
-      const yearSel = buildYearSelect();
-      tdB.appendChild(yearSel);
-
-      // Col C: Model name
-      const tdC = document.createElement("td");
-      const modelSel = buildModelSelect();
-      tdC.appendChild(modelSel);
-
-      // Col D: Trim
-      const tdD = document.createElement("td");
-      const trimSel = buildTrimSelect();
-      tdD.appendChild(trimSel);
-
-      // Col E: Model_ID auto
-      const tdE = document.createElement("td");
-      tdE.className = "blue";
-      tdE.textContent = "";
-
-      // Update Model_ID when Model_Name changes
-      modelSel.addEventListener("change", () => {
-        tdE.textContent = computeModelId(modelSel.value);
-      });
-
-      // ----- Phase 2: Cash Total Savings Offer Section -----
-
-      // F Creative_Name dropdown
-      const tdF = document.createElement("td");
-      const creativeSel = buildCreativeNameSelect();
-      tdF.appendChild(creativeSel);
-      tr.dataset.creativeCode = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
-
-      // Store selected creative code on the row for later taxonomy building
-      creativeSel.addEventListener("change", () => {
-        const code = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
-        tr.dataset.creativeCode = code;
-      });
-
-      // G Cash_Wrapper_Creative dropdown
-      const tdG = document.createElement("td");
-      const wrapperSel = buildCashWrapperSelect();
-      tdG.appendChild(wrapperSel);
-
-      // H user input
-      const tdH = document.createElement("td");
-      tdH.appendChild(buildTextInput("hd-cash-disclaimer-type"));
-
-      // I user input
-      const tdI = document.createElement("td");
-      tdI.appendChild(buildTextInput("hd-cash-incentive-number"));
-
-      // J auto (blue)
-      const tdJ = document.createElement("td");
-      tdJ.className = "blue";
-      tdJ.setAttribute("data-col", "J");
-
-      // K auto (blue)
-      const tdK = document.createElement("td");
-      tdK.className = "blue";
-      tdK.setAttribute("data-col", "K");
-
-      // L auto (blue)
-      const tdL = document.createElement("td");
-      tdL.className = "blue";
-      tdL.setAttribute("data-col", "L");
-
-      // M user input
-      const tdM = document.createElement("td");
-      tdM.appendChild(buildTextInput("hd-cash-offer-price"));
-
-      // N user input
-      const tdN = document.createElement("td");
-      tdN.appendChild(buildTextInput("hd-cash-offer-suffix"));
-
-      // O auto (blue)
-      const tdO = document.createElement("td");
-      tdO.className = "blue";
-      tdO.setAttribute("data-col", "O");
-
-      // P user input
-      const tdP = document.createElement("td");
-      tdP.appendChild(buildTextInput("hd-cash-retail-bc-details"));
-
-      // Q user input
-      const tdQ = document.createElement("td");
-      tdQ.appendChild(buildTextInput("hd-cash-hmf-apr-details"));
-
-      // R user input
-      const tdR = document.createElement("td");
-      tdR.appendChild(buildTextInput("hd-cash-disclaimer"));
-
-      // S auto (blue)
-      const tdS = document.createElement("td");
-      tdS.className = "blue";
-      tdS.setAttribute("data-col", "S");
-
-      // T auto (blue)
-      const tdT = document.createElement("td");
-      tdT.className = "blue";
-      tdT.setAttribute("data-col", "T");
-
-      // When wrapper changes, apply all Phase 2 formulas
-      wrapperSel.addEventListener("change", () => {
-        applyPhase2Autofields(wrapperSel.value, tdJ, tdK, tdL, tdO, tdS, tdT);
-      });
-
-      // ----- Action -----
-      const tdX = document.createElement("td");
-      const rm = document.createElement("button");
-      rm.type = "button";
-      rm.textContent = "Remove";
-      rm.addEventListener("click", () => tr.remove());
-      tdX.appendChild(rm);
-
-      // Append columns in order
-      tr.appendChild(tdA);
-      tr.appendChild(tdB);
-      tr.appendChild(tdC);
-      tr.appendChild(tdD);
-      tr.appendChild(tdE);
-
-      tr.appendChild(tdF);
-      tr.appendChild(tdG);
-      tr.appendChild(tdH);
-      tr.appendChild(tdI);
-
-      tr.appendChild(tdJ);
-      tr.appendChild(tdK);
-      tr.appendChild(tdL);
-
-      tr.appendChild(tdM);
-      tr.appendChild(tdN);
-
-      tr.appendChild(tdO);
-
-      tr.appendChild(tdP);
-      tr.appendChild(tdQ);
-      tr.appendChild(tdR);
-
-      tr.appendChild(tdS);
-      tr.appendChild(tdT);
-
-      tr.appendChild(tdX);
-
-      els.gridBody.appendChild(tr);
-
-      // initialize Phase 2 auto-fields for blank wrapper
-      applyPhase2Autofields(wrapperSel.value, tdJ, tdK, tdL, tdO, tdS, tdT);
     }
 
     function refreshAllMarketDropdowns() {
       const region = els.regionCode.value;
+
       document.querySelectorAll("select.hd-market").forEach(sel => {
         const current = sel.value;
+
         sel.innerHTML = "";
-        sel.appendChild(makeOption(""));
-        sel.options[0].text = "-- Select --";
+        sel.appendChild(makeOption("", "-- Select --"));
+
         const list = region && MARKETS_BY_REGION[region] ? MARKETS_BY_REGION[region] : [];
         list.forEach(v => sel.appendChild(makeOption(v)));
 
-        // keep selection if still valid
-        if (current && list.includes(current)) sel.value = current;
-        else sel.value = "";
+        sel.value = (current && list.includes(current)) ? current : "";
       });
     }
 
-    // Events
+    // =========================
+    // ROW BUILDER (CARDS)
+    // =========================
+
+    let rowCounter = 1;
+
+    function addRow() {
+      const card = document.createElement("div");
+      card.className = "row-card";
+      card.setAttribute("data-offer-row", "1");
+      card.dataset.rowId = String(rowCounter++);
+
+      // Header
+      const header = document.createElement("div");
+      header.className = "row-card-header";
+
+      const title = document.createElement("div");
+      title.className = "row-title";
+      title.textContent = `Offer Row ${card.dataset.rowId}`;
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.textContent = "Remove Row";
+      removeBtn.addEventListener("click", () => card.remove());
+
+      header.appendChild(title);
+      header.appendChild(removeBtn);
+
+      // --------------------
+      // Phase 1
+      // --------------------
+      const phase1 = document.createElement("div");
+      phase1.className = "phase";
+
+      const p1Title = document.createElement("div");
+      p1Title.className = "phase-title";
+      p1Title.textContent = "Phase 1: Offer Grid Row";
+
+      const p1Grid = document.createElement("div");
+      p1Grid.className = "phase-grid";
+
+      const marketSel = buildMarketSelect(els.regionCode.value);
+      const yearSel = buildYearSelect();
+      const modelSel = buildModelSelect();
+      const trimSel = buildTrimSelect();
+
+      const modelIdBox = readonlyBlue("", "E"); // not used in Phase2 calc, but fine
+      modelSel.addEventListener("change", () => {
+        modelIdBox.textContent = computeModelId(modelSel.value);
+      });
+
+      p1Grid.appendChild(fieldWrap("HDAA_Description", marketSel));
+      p1Grid.appendChild(fieldWrap("Model_Year", yearSel));
+      p1Grid.appendChild(fieldWrap("Model_Name", modelSel));
+      p1Grid.appendChild(fieldWrap("Trim_Name", trimSel));
+      p1Grid.appendChild(fieldWrap("Model_ID (auto)", modelIdBox));
+
+      phase1.appendChild(p1Title);
+      phase1.appendChild(p1Grid);
+
+      // --------------------
+      // Phase 2
+      // --------------------
+      const phase2 = document.createElement("div");
+      phase2.className = "phase";
+
+      const p2Title = document.createElement("div");
+      p2Title.className = "phase-title";
+      p2Title.textContent = "Phase 2: Cash Total Savings Offer Section";
+
+      const p2Grid = document.createElement("div");
+      p2Grid.className = "phase-grid";
+
+      const creativeSel = buildCreativeNameSelect();
+      card.dataset.creativeCode = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
+      creativeSel.addEventListener("change", () => {
+        card.dataset.creativeCode = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
+      });
+
+      const wrapperSel = buildCashWrapperSelect();
+
+      const inDisclaimerType = buildTextInput("hd-cash-disclaimer-type");
+      const inIncentiveNumber = buildTextInput("hd-cash-incentive-number");
+      const inOfferPrice = buildTextInput("hd-cash-offer-price");
+      const inOfferSuffix = buildTextInput("hd-cash-offer-suffix");
+      const inRetailBCDetails = buildTextInput("hd-cash-retail-bc-details");
+      const inHmfAprDetails = buildTextInput("hd-cash-hmf-apr-details");
+      const inDisclaimer = buildTextInput("hd-cash-disclaimer");
+
+      const boxJ = readonlyBlue("", "J");
+      const boxK = readonlyBlue("", "K");
+      const boxL = readonlyBlue("", "L");
+      const boxO = readonlyBlue("", "O");
+      const boxS = readonlyBlue("", "S");
+      const boxT = readonlyBlue("", "T");
+
+      // Key behavior: when wrapper changes, pull current Start/End dates
+      wrapperSel.addEventListener("change", () => {
+        applyPhase2Autofields(wrapperSel.value, boxJ, boxK, boxL, boxO, boxS, boxT);
+      });
+
+      p2Grid.appendChild(fieldWrap("Creative_Name", creativeSel));
+      p2Grid.appendChild(fieldWrap("Cash_Wrapper_Creative", wrapperSel));
+      p2Grid.appendChild(fieldWrap("Cash_Disclaimer_Type", inDisclaimerType));
+      p2Grid.appendChild(fieldWrap("Cash_Incentive_Number", inIncentiveNumber));
+
+      p2Grid.appendChild(fieldWrap("Cash_Incentive_Type (auto)", boxJ));
+      p2Grid.appendChild(fieldWrap("Cash_Offer_DisplayName (auto)", boxK));
+      p2Grid.appendChild(fieldWrap("Cash_Offer_Prefix (auto)", boxL));
+
+      p2Grid.appendChild(fieldWrap("Cash_Offer_Price", inOfferPrice));
+      p2Grid.appendChild(fieldWrap("Cash_Offer_Suffix", inOfferSuffix));
+      p2Grid.appendChild(fieldWrap("Cash_Offer_ShortDescription (auto)", boxO));
+
+      p2Grid.appendChild(fieldWrap("Cash_RetailBonusCashOfferDetails", inRetailBCDetails));
+      p2Grid.appendChild(fieldWrap("Cash_HmfStandardAprOfferDetails", inHmfAprDetails));
+      p2Grid.appendChild(fieldWrap("Cash_Disclaimer", inDisclaimer));
+
+      p2Grid.appendChild(fieldWrap("Cash_PurchaseStartDate (auto)", boxS));
+      p2Grid.appendChild(fieldWrap("Cash_PurchaseEndDate (auto)", boxT));
+
+      phase2.appendChild(p2Title);
+      phase2.appendChild(p2Grid);
+
+      // Assemble
+      card.appendChild(header);
+      card.appendChild(phase1);
+      card.appendChild(phase2);
+
+      els.rowsContainer.appendChild(card);
+
+      // Initialize Phase 2 autos (blank wrapper => blanks)
+      applyPhase2Autofields(wrapperSel.value, boxJ, boxK, boxL, boxO, boxS, boxT);
+    }
+
+    // =========================
+    // EVENTS
+    // =========================
+
     els.regionCode.addEventListener("change", refreshAllMarketDropdowns);
+
+    // Use "input" so it updates immediately in more browsers
+    els.offerStart.addEventListener("input", refreshPhase2AutofieldsForAllRows);
+    els.offerEnd.addEventListener("input", refreshPhase2AutofieldsForAllRows);
+
     els.addRowBtn.addEventListener("click", addRow);
-    els.clearRowsBtn.addEventListener("click", () => (els.gridBody.innerHTML = ""));
 
-    // When Offer Start/End changes, refresh S/T auto-populated columns for all rows
-    document.getElementById("offerStart").addEventListener("input", refreshPhase2AutofieldsForAllRows);
-    document.getElementById("offerEnd").addEventListener("input", refreshPhase2AutofieldsForAllRows);
+    els.clearRowsBtn.addEventListener("click", () => {
+      els.rowsContainer.innerHTML = "";
+      rowCounter = 1;
+    });
 
-    // Start with one row like Excel’s first data row
+    // Start with one row
     addRow();
   </script>
 </body>
