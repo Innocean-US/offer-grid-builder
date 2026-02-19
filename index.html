@@ -261,7 +261,7 @@
 
     const CREATIVE_NAME_OPTIONS = [
       { code: "",        label: "-- Select --" },
-      { code: "25PROMO", label: "2025 Promo Period Creative" },
+      { code: "25PROMO", label: "Promo Period Creative" },
       { code: "SPGSE",   label: "Spring Getaway Sales Event" },
       { code: "SGSE",    label: "Summer Getaway Sales Event" },
       { code: "WGSE",    label: "Winter Getaway Sales Event" },
@@ -499,7 +499,7 @@
 
       const p1Title = document.createElement("div");
       p1Title.className = "phase-title";
-      p1Title.textContent = "Phase 1: Offer Grid Row";
+      p1Title.textContent = "Offer Grid Row";
 
       const p1Grid = document.createElement("div");
       p1Grid.className = "phase-grid";
@@ -518,7 +518,7 @@
       p1Grid.appendChild(fieldWrap("Model_Year", yearSel));
       p1Grid.appendChild(fieldWrap("Model_Name", modelSel));
       p1Grid.appendChild(fieldWrap("Trim_Name", trimSel));
-      p1Grid.appendChild(fieldWrap("Model_ID (auto)", modelIdBox));
+      p1Grid.appendChild(fieldWrap("Model_ID", modelIdBox));
 
       phase1.appendChild(p1Title);
       phase1.appendChild(p1Grid);
@@ -531,7 +531,7 @@
 
       const p2Title = document.createElement("div");
       p2Title.className = "phase-title";
-      p2Title.textContent = "Phase 2: Cash Total Savings Offer Section";
+      p2Title.textContent = "Cash Total Savings Offer Section";
 
       const p2Grid = document.createElement("div");
       p2Grid.className = "phase-grid";
@@ -569,20 +569,20 @@
       p2Grid.appendChild(fieldWrap("Cash_Disclaimer_Type", inDisclaimerType));
       p2Grid.appendChild(fieldWrap("Cash_Incentive_Number", inIncentiveNumber));
 
-      p2Grid.appendChild(fieldWrap("Cash_Incentive_Type (auto)", boxJ));
-      p2Grid.appendChild(fieldWrap("Cash_Offer_DisplayName (auto)", boxK));
-      p2Grid.appendChild(fieldWrap("Cash_Offer_Prefix (auto)", boxL));
+      p2Grid.appendChild(fieldWrap("Cash_Incentive_Type", boxJ));
+      p2Grid.appendChild(fieldWrap("Cash_Offer_DisplayName", boxK));
+      p2Grid.appendChild(fieldWrap("Cash_Offer_Prefix ", boxL));
 
       p2Grid.appendChild(fieldWrap("Cash_Offer_Price", inOfferPrice));
       p2Grid.appendChild(fieldWrap("Cash_Offer_Suffix", inOfferSuffix));
-      p2Grid.appendChild(fieldWrap("Cash_Offer_ShortDescription (auto)", boxO));
+      p2Grid.appendChild(fieldWrap("Cash_Offer_ShortDescription", boxO));
 
       p2Grid.appendChild(fieldWrap("Cash_RetailBonusCashOfferDetails", inRetailBCDetails));
       p2Grid.appendChild(fieldWrap("Cash_HmfStandardAprOfferDetails", inHmfAprDetails));
       p2Grid.appendChild(fieldWrap("Cash_Disclaimer", inDisclaimer));
 
-      p2Grid.appendChild(fieldWrap("Cash_PurchaseStartDate (auto)", boxS));
-      p2Grid.appendChild(fieldWrap("Cash_PurchaseEndDate (auto)", boxT));
+      p2Grid.appendChild(fieldWrap("Cash_PurchaseStartDate", boxS));
+      p2Grid.appendChild(fieldWrap("Cash_PurchaseEndDate", boxT));
 
       phase2.appendChild(p2Title);
       phase2.appendChild(p2Grid);
