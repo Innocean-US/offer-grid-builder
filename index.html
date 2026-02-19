@@ -441,7 +441,7 @@
       // F Creative_Name dropdown
       const tdF = document.createElement("td");
       const creativeSel = buildCreativeNameSelect();
-      tdF.appendChild(creativeSel)
+      tdF.appendChild(creativeSel);
       tr.dataset.creativeCode = creativeSel.selectedOptions?.[0]?.dataset?.code || "";
 
       // Store selected creative code on the row for later taxonomy building
@@ -584,8 +584,8 @@
     els.clearRowsBtn.addEventListener("click", () => (els.gridBody.innerHTML = ""));
 
     // When Offer Start/End changes, refresh S/T auto-populated columns for all rows
-    document.getElementById("offerStart").addEventListener("input", refreshPhase2DatesForAllRows);
-    document.getElementById("offerEnd").addEventListener("input", refreshPhase2DatesForAllRows);
+    document.getElementById("offerStart").addEventListener("input", refreshPhase2AutofieldsForAllRows);
+    document.getElementById("offerEnd").addEventListener("input", refreshPhase2AutofieldsForAllRows);
 
     // Start with one row like Excel’s first data row
     addRow();
